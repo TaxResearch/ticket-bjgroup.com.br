@@ -1,0 +1,13 @@
+# dependencies
+node_modules/
+
+# env (não usado pelo PHP; config fica em config/config.php)
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# logs
+*.log

@@ -1,0 +1,141 @@
+<?php
+// Configurações gerais do sistema
+define('APP_NAME', 'DevDeck');
+define('APP_VERSION', '2.0.0');
+
+// Configurações da API
+define('IS_LOCAL', in_array($_SERVER['HTTP_HOST'], ['localhost', '127.0.0.1', 'localhost:8000']));
+define('API_BASE_URL', IS_LOCAL ? 'http://localhost:3001/api' : 'https://apiticket.bjgroup.com.br/api');
+define('WS_URL', IS_LOCAL ? 'http://localhost:3001' : 'https://apiticket.bjgroup.com.br');
+
+// Configurações Pusher
+define('PUSHER_KEY', 'c4f7fea1d37fea1c1c73');
+define('PUSHER_CLUSTER', 'us2');
+
+// Configurações de sessão
+define('SESSION_NAME', 'DEVDECK_SESSION');
+define('TOKEN_KEY', 'devdeck_auth_token');
+
+// Timezone
+date_default_timezone_set('America/Sao_Paulo');
+
+// Detectar base path automaticamente
+$documentRoot = rtrim($_SERVER['DOCUMENT_ROOT'] ?? '', '/');
+$scriptPath = dirname($_SERVER['SCRIPT_FILENAME']);
+$basePath = str_replace($documentRoot, '', $scriptPath);
+$basePath = str_replace('\\', '/', $basePath); // Windows compatibility
+$basePath = '/' . ltrim($basePath, '/'); // ensure leading slash
+$basePath = rtrim($basePath, '/');
+
+// Remove /views do path se existir, pois os assets estão na raiz
+if (function_exists('str_ends_with') ? str_ends_with($basePath, '/views') : substr($basePath, -6) === '/views') {
+    $basePath = substr($basePath, 0, -6); // Remove os últimos 6 caracteres (/views)
+}
+
+define('BASE_PATH', $basePath);
+
+// Função helper para criar URLs corretas
+function url($path)
+{
+    $path = ltrim($path, '/');
+    if (BASE_PATH) {
+        return BASE_PATH . '/' . $path;
+    }
+    return '/' . $path;
+}
+
+// Iniciar sessão
+if (session_status() === PHP_SESSION_NONE) {
+    session_set_cookie_params([
+        'lifetime' => 86400, // 1 dia
+        'path' => '/',       // Vale para todo o site
+        'domain' => '',      // Domínio atual
+        'secure' => false,   // Mude para true se usar HTTPS em produção
+        'httponly' => true,  // Segurança contra XSS
+        'samesite' => 'Lax'
+    ]);
+    session_name(SESSION_NAME);
+    session_start();
+}
+
+// Funções auxiliares
+function isLoggedIn()
+{
+    return isset($_SESSION['auth_token']) && !empty($_SESSION['auth_token']);
+}
+
+function getAuthToken()
+{
+    return $_SESSION['auth_token'] ?? null;
+}
+
+function getUserEmail()
+{
+    return $_SESSION['user_email'] ?? null;
+}
+
+function getUserName()
+{
+    return $_SESSION['user_name'] ?? null;
+}
+
+function setAuthData($token, $email, $name, $isDevTeam = false)
+{
+    $_SESSION['auth_token'] = $token;
+    $_SESSION['user_email'] = $email;
+    $_SESSION['user_name'] = $name;
+    $_SESSION['is_dev_team'] = $isDevTeam;
+}
+
+function getIsDevTeam()
+{
+    return $_SESSION['is_dev_team'] ?? false;
+}
+
+function clearAuthData()
+{
+    unset($_SESSION['auth_token']);
+    unset($_SESSION['user_email']);
+    unset($_SESSION['user_name']);
+    unset($_SESSION['is_dev_team']);
+    session_destroy();
+}
+
+function redirect($path)
+{
+    header("Location: $path");
+    exit;
+}
+
+function apiRequest($endpoint, $method = 'GET', $data = null, $requireAuth = true)
+{
+    $url = API_BASE_URL . $endpoint;
+    $headers = ['Content-Type: application/json'];
+
+    if ($requireAuth && isLoggedIn()) {
+        $headers[] = 'Authorization: Bearer ' . getAuthToken();
+    }
+
+    $options = [
+        'http' => [
+            'method' => $method,
+            'header' => implode("\r\n", $headers),
+            'content' => $data ? json_encode($data) : null,
+            'ignore_errors' => true
+        ]
+    ];
+
+    $context = stream_context_create($options);
+    $response = file_get_contents($url, false, $context);
+
+    $httpCode = 200;
+    if (isset($http_response_header)) {
+        preg_match('/HTTP\/\d\.\d\s+(\d+)/', $http_response_header[0], $matches);
+        $httpCode = intval($matches[1] ?? 200);
+    }
+
+    return [
+        'code' => $httpCode,
+        'data' => json_decode($response, true)
+    ];
+}

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DevDeck</title>
+    <link rel="icon" type="image/png" href="./img/logo-DevDesck-removebg-preview.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="min-h-screen p-4 sm:p-8 flex flex-col items-center">
+
+    <header class="w-full max-w-7xl flex items-center justify-between mb-6 sm:mb-10 px-4">
+        <div class="flex items-center flex-shrink-0">
+            <img src="./img/logo-DevDesck-removebg-preview.png" alt="DevDeck Logo" class="w-12 h-12 sm:w-14 sm:h-14 mr-2 filter drop-shadow-[0_0_8px_rgba(162,89,255,0.7)]"/>
+            <img src="./img/Nome-DevDesck-removebg-preview.png" alt="DevDeck" class="h-10 sm:h-12"/>
+        </div>
+        <div id="greeting-container" class="flex-grow text-center hidden"><span id="user-greeting" class="text-lg text-gray-300"></span></div>
+        <div id="user-menu" class="relative hidden">
+            <button id="user-menu-button" class="user-menu-button-class flex items-center gap-3 bg-[#23284a] p-2 rounded-lg border border-transparent hover:border-purple-500 transition-all">
+                <span id="user-name-display" class="font-semibold text-white">Olá, ...</span>
+                <div id="user-avatar" class="user-avatar-class w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm"></div>
+                <svg id="dropdown-arrow" class="w-5 h-5 text-gray-400 transition-transform duration-200" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+            </button>
+            <div id="user-menu-dropdown" class="user-menu-dropdown-class absolute right-0 mt-2 w-72 bg-[#23284a] rounded-lg shadow-2xl border border-gray-700 z-50">
+                <div class="p-4 border-b border-gray-700">
+                    <p class="font-semibold text-white" id="user-dropdown-name">Nome Completo</p>
+                    <p class="text-sm text-gray-400" id="user-dropdown-email">email@exemplo.com</p>
+                </div>
+                <div class="p-4 border-b border-gray-700 space-y-3">
+                    <h4 class="text-sm font-semibold text-gray-400 mb-2">Notificações Email</h4>
+                    <label for="toggle-daily-summary" class="flex items-center justify-between cursor-pointer">
+                        <span class="flex items-center text-gray-300">Resumo Diário <svg class="info-icon w-4 h-4 ml-2 text-gray-500 hover:text-cyan-400 cursor-help" data-setting-key="dailySummary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg></span>
+                        <div class="relative"><input type="checkbox" id="toggle-daily-summary" class="sr-only toggle-checkbox" data-setting="notifyDailySummary"><div class="toggle-bg bg-gray-600 border-2 border-gray-600 h-6 w-11 rounded-full"></div><div class="toggle-dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform"></div></div>
+                    </label>
+                    <label for="toggle-stale-tasks" class="flex items-center justify-between cursor-pointer">
+                        <span class="flex items-center text-gray-300">Aviso de Tarefa Parada <svg class="info-icon w-4 h-4 ml-2 text-gray-500 hover:text-cyan-400 cursor-help" data-setting-key="staleTasks" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg></span>
+                        <div class="relative"><input type="checkbox" id="toggle-stale-tasks" class="sr-only toggle-checkbox" data-setting="notifyStaleTasks"><div class="toggle-bg bg-gray-600 border-2 border-gray-600 h-6 w-11 rounded-full"></div><div class="toggle-dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform"></div></div>
+                    </label>
+                </div>
+                <div class="p-4 border-b border-gray-700 space-y-3">
+                    <h4 class="text-sm font-semibold text-gray-400 mb-2">Notificações WhatsApp (Meta API)</h4>
+                    <label for="toggle-whatsapp" class="flex items-center justify-between cursor-pointer">
+                        <span class="text-gray-300">Receber via WhatsApp</span>
+                        <div class="relative"><input type="checkbox" id="toggle-whatsapp" class="sr-only toggle-checkbox" data-setting="notifyViaWhatsApp"><div class="toggle-bg bg-gray-600 border-2 border-gray-600 h-6 w-11 rounded-full"></div><div class="toggle-dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform"></div></div>
+                    </label>
+                    <div class="mt-2">
+                        <label for="whatsapp-number-confirm" class="block text-sm font-medium mb-1 text-gray-400">Seu Nº WhatsApp (com + DDI):</label>
+                        <input type="tel" id="whatsapp-number-confirm" placeholder="+5519999998888" class="modal-input w-full p-2 rounded text-sm" data-setting="whatsappNumber">
+                        <small class="text-xs text-gray-500 mt-1 block">Confirme seu número após configurar.</small>
+                    </div>
+                    
+                    <!-- Meta WhatsApp API Configuration -->
+                    <div class="mt-4 p-3 bg-[#1e223b] rounded-lg border border-gray-700">
+                        <div class="flex items-center justify-between mb-2">
+                            <h5 class="text-sm font-semibold text-cyan-400">🔑 Configurar Meta API</h5>
+                            <button id="whatsapp-meta-tutorial-btn" class="text-xs text-purple-400 hover:text-purple-300 underline">📖 Tutorial</button>
+                        </div>
+                        
+                        <!-- Status e Contador -->
+                        <div id="whatsapp-meta-status" class="mb-3 p-2 bg-[#23284a] rounded text-xs">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-gray-400">Status:</span>
+                                <span id="whatsapp-meta-status-text" class="text-gray-300">Não configurado</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-400">Mensagens este mês:</span>
+                                <span id="whatsapp-meta-counter" class="text-cyan-400 font-semibold">0/950</span>
+                            </div>
+                            <!-- Barra de progresso -->
+                            <div class="mt-2 w-full bg-gray-700 rounded-full h-1.5">
+                                <div id="whatsapp-meta-progress-bar" class="bg-cyan-400 h-1.5 rounded-full" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Formulário de credenciais -->
+                        <div id="whatsapp-meta-form" class="space-y-2">
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1">Phone Number ID:</label>
+                                <input type="text" id="whatsapp-phone-number-id" placeholder="109876543210" class="modal-input w-full p-2 rounded text-xs">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1">Access Token:</label>
+                                <input type="password" id="whatsapp-access-token" placeholder="EAA..." class="modal-input w-full p-2 rounded text-xs">
+                            </div>
+                            <div class="flex gap-2">
+                                <button id="whatsapp-meta-save-btn" class="flex-1 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold py-2 px-3 rounded-lg">💾 Salvar</button>
+                                <button id="whatsapp-meta-remove-btn" class="flex-1 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold py-2 px-3 rounded-lg hidden">🗑️ Remover</button>
+                            </div>
+                        </div>
+
+                        <!-- Botão de teste -->
+                        <button id="whatsapp-meta-test-btn" class="mt-2 w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold py-2 px-3 rounded-lg hidden">📱 Enviar Teste</button>
+                    </div>
+                </div>
+                <div class="p-2">
+                    <button id="logout-button" class="w-full text-center p-2 rounded hover:bg-red-700/50 text-red-400 transition-colors">Sair</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div id="loading-indicator" class="fixed top-0 left-0 w-full h-full bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500"></div>
+        <p class="ml-4 text-xl text-purple-300">Carregando...</p>
+    </div>
+
+    <main id="app-container" class="container mx-auto max-w-7xl w-full hidden">
+        <div id="boards-container" class="board-selector-container"><span class="text-gray-500 italic p-3">Carregando quadros...</span></div>
+        <div id="no-boards-message" class="text-center py-10 px-6 bg-[#23284a] rounded-lg shadow-lg hidden">
+            <h3 class="text-xl font-semibold text-cyan-300 mb-4">Nenhum quadro encontrado!</h3>
+            <p class="text-gray-400 mb-6">Parece que você ainda não criou nenhum quadro. Clique em "+ Novo Quadro" para começar.</p>
+        </div>
+        <section id="kanban-board" class="grid grid-cols-1 md:grid-cols-3 gap-6 hidden">
+            <div class="column bg-[#23284a] rounded-xl shadow-lg p-4 flex flex-col" data-status="TODO">
+                <h2 class="column-header text-xl font-semibold mb-4 text-center">To Do</h2>
+                <div class="tasks flex-grow min-h-[100px] space-y-3" id="todo-tasks"></div>
+                <button class="add-task-button text-white font-semibold py-2 px-4 rounded-lg mt-4 w-full" data-status="TODO">+ Nova Tarefa</button>
+            </div>
+            <div class="column bg-[#23284a] rounded-xl shadow-lg p-4 flex flex-col" data-status="DOING">
+                <h2 class="column-header text-xl font-semibold mb-4 text-center">Doing</h2>
+                <div class="tasks flex-grow min-h-[100px] space-y-3" id="doing-tasks"></div>
+                <button class="add-task-button text-white font-semibold py-2 px-4 rounded-lg mt-4 w-full" data-status="DOING">+ Nova Tarefa</button>
+            </div>
+            <div class="column bg-[#23284a] rounded-xl shadow-lg p-4 flex flex-col" data-status="DONE">
+                <h2 class="column-header text-xl font-semibold mb-4 text-center">Done</h2>
+                <div class="tasks flex-grow min-h-[100px] space-y-3" id="done-tasks"></div>
+                <button class="add-task-button text-white font-semibold py-2 px-4 rounded-lg mt-4 w-full" data-status="DONE">+ Nova Tarefa</button>
+            </div>
+        </section>
+    </main>
+
+    <div id="auth-section" class="w-full max-w-md mt-10">
+        <div id="login-view" class="auth-container p-8 rounded-lg">
+            <h2 class="text-2xl font-semibold mb-6 text-center text-cyan-300">Login</h2>
+            <form id="login-form">
+                <div class="mb-4"><label for="login-email" class="block text-sm font-medium mb-1">Email:</label><input type="email" id="login-email" class="auth-input w-full p-2 rounded" required></div>
+                <div class="mb-6"><label for="login-password" class="block text-sm font-medium mb-1">Senha:</label><input type="password" id="login-password" class="auth-input w-full p-2 rounded" required></div>
+                <p id="login-error" class="text-red-400 text-sm mb-4 text-center hidden"></p>
+                <button type="submit" class="auth-button w-full text-white font-semibold py-2 px-4 rounded-lg">Entrar</button>
+            </form>
+            <p class="mt-6 text-center text-sm">Não tem uma conta? <span id="show-signup" class="link-style">Cadastre-se</span></p>
+        </div>
+        <div id="signup-view" class="auth-container p-8 rounded-lg hidden">
+            <h2 class="text-2xl font-semibold mb-6 text-center text-cyan-300">Cadastro</h2>
+            <form id="signup-form">
+                <div class="mb-4"><label for="signup-name" class="block text-sm font-medium mb-1">Nome:</label><input type="text" id="signup-name" class="auth-input w-full p-2 rounded" required></div>
+                <div class="mb-4"><label for="signup-email" class="block text-sm font-medium mb-1">Email:</label><input type="email" id="signup-email" class="auth-input w-full p-2 rounded" required></div>
+                <div class="mb-4"><label for="signup-password" class="block text-sm font-medium mb-1">Senha:</label><input type="password" id="signup-password" class="auth-input w-full p-2 rounded" required minlength="6"><small class="text-gray-400">Mínimo 6 caracteres.</small></div>
+                <div class="mb-6"><label for="signup-confirm-password" class="block text-sm font-medium mb-1">Confirmar Senha:</label><input type="password" id="signup-confirm-password" class="auth-input w-full p-2 rounded" required minlength="6"></div>
+                <p id="signup-error" class="text-red-400 text-sm mb-4 text-center hidden"></p>
+                <button type="submit" class="auth-button w-full text-white font-semibold py-2 px-4 rounded-lg">Cadastrar</button>
+            </form>
+            <p class="mt-6 text-center text-sm">Já tem uma conta? <span id="show-login" class="link-style">Faça login</span></p>
+        </div>
+    </div>
+
+    <div id="task-modal" class="modal fixed inset-0 flex items-center justify-center z-40 hidden">
+        <div class="modal-content p-6 rounded-lg w-full max-w-md mx-4">
+            <h3 id="modal-title" class="text-xl font-semibold mb-4 text-cyan-300">Nova Tarefa</h3>
+            <form id="task-form">
+                <input type="hidden" id="task-id">
+                <div class="mb-4"><label for="task-title" class="block text-sm font-medium mb-1">Título:</label><input type="text" id="task-title" name="title" class="modal-input w-full p-2 rounded" required maxlength="255"></div>
+                <div class="mb-4"><label for="task-description" class="block text-sm font-medium mb-1">Descrição:</label><textarea id="task-description" name="description" rows="3" class="modal-textarea w-full p-2 rounded" maxlength="1000"></textarea></div>
+                <div class="mb-6"><label for="task-status" class="block text-sm font-medium mb-1">Status:</label><select id="task-status" name="status" class="modal-select w-full p-2 rounded"><option value="TODO">To Do</option><option value="DOING">Doing</option><option value="DONE">Done</option></select></div>
+                <div class="flex justify-end gap-3"><button type="button" id="modal-cancel" class="modal-close-button text-white font-semibold py-2 px-4 rounded-lg">Cancelar</button><button type="submit" id="modal-save" class="modal-button text-white font-semibold py-2 px-4 rounded-lg">Salvar</button><button type="button" id="modal-delete" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg hidden">Excluir</button></div>
+            </form>
+        </div>
+    </div>
+
+    <div id="board-modal" class="modal fixed inset-0 flex items-center justify-center z-40 hidden">
+        <div class="modal-content p-6 rounded-lg w-full max-w-sm mx-4">
+            <h3 id="board-modal-title" class="text-xl font-semibold mb-4 text-cyan-300">Novo Quadro</h3>
+            <form id="board-form">
+                <input type="hidden" id="board-id">
+                <div class="mb-6"><label for="board-name" class="block text-sm font-medium mb-1">Nome:</label><input type="text" id="board-name" name="name" class="modal-input w-full p-2 rounded" required maxlength="100"><p id="board-error" class="text-red-400 text-sm mt-1 hidden"></p></div>
+                <div class="flex justify-end gap-3"><button type="button" id="board-modal-cancel" class="modal-close-button text-white font-semibold py-2 px-4 rounded-lg">Cancelar</button><button type="submit" id="board-modal-save" class="modal-button text-white font-semibold py-2 px-4 rounded-lg">Salvar</button></div>
+            </form>
+        </div>
+    </div>
+
+    <div id="alert-modal" class="modal fixed inset-0 flex items-center justify-center z-50 hidden">
+        <div class="modal-content p-6 rounded-lg w-full max-w-sm mx-4">
+            <h3 id="alert-modal-title" class="text-xl font-semibold mb-4 text-cyan-300">Aviso</h3>
+            <p id="alert-modal-message" class="text-gray-300 mb-6">Mensagem.</p>
+            <div class="flex justify-end"><button id="alert-modal-ok" class="modal-button text-white font-semibold py-2 px-4 rounded-lg">OK</button></div>
+        </div>
+    </div>
+
+    <div id="confirm-modal" class="modal fixed inset-0 flex items-center justify-center z-50 hidden">
+        <div class="modal-content p-6 rounded-lg w-full max-w-sm mx-4">
+            <h3 id="confirm-modal-title" class="text-xl font-semibold mb-4 text-red-400">Confirmar</h3>
+            <p id="confirm-modal-message" class="text-gray-300 mb-6">Mensagem.</p>
+            <div class="flex justify-end gap-3"><button id="confirm-modal-cancel" class="modal-close-button text-white font-semibold py-2 px-4 rounded-lg">Cancelar</button><button id="confirm-modal-confirm" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg">Confirmar</button></div>
+        </div>
+    </div>
+
+    <div id="info-modal" class="modal fixed inset-0 flex items-center justify-center z-50 hidden">
+        <div class="modal-content p-6 rounded-lg w-full max-w-md mx-4">
+            <h3 id="info-modal-title" class="text-xl font-semibold mb-4 text-cyan-300">Informação</h3>
+            <p id="info-modal-description" class="text-gray-300 mb-4">Descrição.</p>
+            <p class="text-sm text-gray-400 mb-6">Enviado para: <span id="info-modal-email" class="font-medium text-gray-300"></span></p>
+            <div class="flex justify-end"><button id="info-modal-close" class="modal-close-button text-white font-semibold py-2 px-4 rounded-lg">Fechar</button></div>
+        </div>
+    </div>
+
+    <!-- WhatsApp Meta Tutorial Modal -->
+    <div id="whatsapp-tutorial-modal" class="modal fixed inset-0 flex items-center justify-center z-50 hidden">
+        <div class="modal-content p-6 rounded-lg w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            <h3 class="text-2xl font-semibold mb-4 text-cyan-300">📖 Tutorial: WhatsApp Meta Business API</h3>
+            
+            <div class="space-y-4 text-sm">
+                <!-- Passo 1 -->
+                <div class="p-4 bg-[#1e223b] rounded-lg border-l-4 border-cyan-400">
+                    <h4 class="font-semibold text-cyan-400 mb-2">1️⃣ Criar conta Meta for Developers</h4>
+                    <ol class="list-decimal list-inside space-y-1 text-gray-300">
+                        <li>Acesse: <a href="https://developers.facebook.com" target="_blank" class="text-cyan-400 hover:underline">developers.facebook.com</a></li>
+                        <li>Faça login com sua conta Facebook/Instagram</li>
+                        <li>Clique em "Meus Apps" > "Criar App"</li>
+                        <li>Escolha tipo: <span class="text-purple-400 font-semibold">"Business"</span></li>
+                        <li>Nome do App: <span class="text-gray-400 italic">DevDeck WhatsApp</span></li>
+                    </ol>
+                </div>
+
+                <!-- Passo 2 -->
+                <div class="p-4 bg-[#1e223b] rounded-lg border-l-4 border-green-400">
+                    <h4 class="font-semibold text-green-400 mb-2">2️⃣ Adicionar produto WhatsApp</h4>
+                    <ol class="list-decimal list-inside space-y-1 text-gray-300">
+                        <li>No painel do app, encontre <span class="font-semibold">"WhatsApp"</span></li>
+                        <li>Clique em <span class="text-green-400">"Configurar"</span></li>
+                        <li>Selecione ou crie uma conta Business</li>
+                        <li>Aceite os termos</li>
+                    </ol>
+                </div>
+
+                <!-- Passo 3 -->
+                <div class="p-4 bg-[#1e223b] rounded-lg border-l-4 border-purple-400">
+                    <h4 class="font-semibold text-purple-400 mb-2">3️⃣ Obter credenciais</h4>
+                    <p class="text-gray-300 mb-2">Na página do WhatsApp > "API Setup":</p>
+                    <div class="space-y-2">
+                        <div class="p-2 bg-[#23284a] rounded">
+                            <p class="text-xs text-gray-400 mb-1"><strong class="text-cyan-400">Phone Number ID:</strong></p>
+                            <p class="text-xs text-gray-300">Copie o número que aparece em "From"</p>
+                            <p class="text-xs text-gray-500 italic">Exemplo: 109876543210</p>
+                        </div>
+                        <div class="p-2 bg-[#23284a] rounded">
+                            <p class="text-xs text-gray-400 mb-1"><strong class="text-purple-400">Access Token:</strong></p>
+                            <p class="text-xs text-gray-300">Clique em "Generate Token" ou use o temporário</p>
+                            <p class="text-xs text-yellow-400">⚠️ Para permanente: Configurações > Básico > Gerar Token</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Passo 4 -->
+                <div class="p-4 bg-[#1e223b] rounded-lg border-l-4 border-blue-400">
+                    <h4 class="font-semibold text-blue-400 mb-2">4️⃣ Registrar número de teste</h4>
+                    <ol class="list-decimal list-inside space-y-1 text-gray-300">
+                        <li>No painel WhatsApp > "API Setup"</li>
+                        <li>Role até "To" (destinatário)</li>
+                        <li>Clique em "Manage phone number list"</li>
+                        <li>Adicione seu número: <span class="text-gray-400">+5519999998888</span></li>
+                        <li>Você receberá um código via WhatsApp</li>
+                        <li>Cole o código para verificar ✅</li>
+                    </ol>
+                </div>
+
+                <!-- Informações importantes -->
+                <div class="p-4 bg-gradient-to-r from-cyan-900/30 to-purple-900/30 rounded-lg border border-cyan-500/30">
+                    <h4 class="font-semibold text-cyan-300 mb-2">💡 Informações Importantes</h4>
+                    <ul class="space-y-1 text-xs text-gray-300">
+                        <li>✅ <strong>1000 conversas/mês GRÁTIS</strong> para sempre</li>
+                        <li>✅ Limite do app: <strong>950 mensagens/mês</strong> (margem de segurança)</li>
+                        <li>✅ Reset automático: <strong>todo dia 1º</strong> do mês</li>
+                        <li>✅ Funciona na Vercel: <strong>API REST</strong>, sem WebSocket</li>
+                        <li>⚠️ Para produção (qualquer número): fazer <strong>verificação de negócio</strong></li>
+                        <li>📱 Números de teste: <strong>máximo 5 gratuitos</strong></li>
+                    </ul>
+                </div>
+
+                <!-- Links úteis -->
+                <div class="p-3 bg-[#1e223b] rounded-lg">
+                    <h4 class="font-semibold text-gray-400 mb-2 text-xs">🔗 Links Úteis</h4>
+                    <div class="space-y-1 text-xs">
+                        <a href="https://developers.facebook.com" target="_blank" class="block text-cyan-400 hover:underline">• Meta for Developers</a>
+                        <a href="https://developers.facebook.com/docs/whatsapp/cloud-api" target="_blank" class="block text-cyan-400 hover:underline">• Documentação WhatsApp Cloud API</a>
+                        <a href="https://business.facebook.com" target="_blank" class="block text-cyan-400 hover:underline">• Meta Business Manager</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-end mt-6">
+                <button id="whatsapp-tutorial-close" class="modal-button text-white font-semibold py-2 px-6 rounded-lg">Entendi! 🚀</button>
+            </div>
+        </div>
+    </div>
+
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+        <symbol id="icon-pencil" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></symbol>
+        <symbol id="icon-trash" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></symbol>
+    </svg>
+
+<!-- Pusher JS SDK -->
+<script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+
+<!-- JWT Decode para extrair userId -->
+<script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+
+<!-- Funções de atualização isolada de componentes -->
+<script src="assets/js/component-updates.js" defer></script>
+
+</body>
+</html>
