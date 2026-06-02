@@ -5,8 +5,11 @@ define('APP_VERSION', '2.0.0');
 
 // Configurações da API
 define('IS_LOCAL', in_array($_SERVER['HTTP_HOST'], ['localhost', '127.0.0.1', 'localhost:8000']));
-define('API_BASE_URL', IS_LOCAL ? 'http://localhost:3001/api' : 'https://apiticket.bjgroup.com.br/api');
-define('WS_URL', IS_LOCAL ? 'http://localhost:3001' : 'https://apiticket.bjgroup.com.br');
+// O banco é privado (10.68.0.30) => não há backend local viável; o front (mesmo em local)
+// usa a API de produção, que tem CORS liberado. Para rodar um backend local com acesso ao
+// banco, troque para 'http://localhost:3099/api' e 'http://localhost:3099'.
+define('API_BASE_URL', 'https://apiticket.bjgroup.com.br/api');
+define('WS_URL', 'https://apiticket.bjgroup.com.br');
 
 // Configurações Pusher
 define('PUSHER_KEY', 'c4f7fea1d37fea1c1c73');
