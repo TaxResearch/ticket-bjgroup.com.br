@@ -19,7 +19,8 @@ $prefillEmail = trim($_GET['email'] ?? '');
 <?php endif; ?>
 
 <style>
-.ticket-wrap { width: 100%; max-width: 480px; background: #141414; border: 1px solid #2a2a2a; border-radius: 16px; padding: 32px; }
+body { margin: 0; }
+.ticket-wrap { width: 100%; max-width: 560px; margin: 0 auto; background: #141414; border: 1px solid #2a2a2a; border-radius: 16px; padding: 32px; box-sizing: border-box; }
 .step { display: none; }
 .step.active { display: block; }
 .cat-card { background: #1c1c1c; border: 1px solid #2a2a2a; border-radius: 12px; padding: 16px; cursor: pointer; transition: all .15s; text-align: center; }
@@ -185,6 +186,18 @@ if (PREFILL_EMAIL) {
     document.getElementById('inp-email').readOnly = true;
     document.getElementById('inp-email').style.opacity = '0.6';
     document.getElementById('inp-email').style.cursor = 'default';
+}
+
+// Auto-resize: informa a altura real do conteúdo ao widget pai (modo embedded),
+// para o iframe acompanhar o tamanho a cada passo e evitar espaço vazio/overflow.
+if (EMBEDDED) {
+    const wrapEl = document.getElementById('ticket-wrap');
+    const postHeight = () => {
+        window.parent.postMessage({ type: 'ticket-resize', height: Math.ceil(wrapEl.offsetHeight) + 4 }, '*');
+    };
+    if (window.ResizeObserver) new ResizeObserver(postHeight).observe(wrapEl);
+    window.addEventListener('load', postHeight);
+    setTimeout(postHeight, 50);
 }
 
 // Valida o board (por token ou board principal) ao carregar
