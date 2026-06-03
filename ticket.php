@@ -137,12 +137,26 @@ body { margin: 0; }
             </div>
         </div>
         <div style="display:flex;gap:8px;">
-            <button class="btn-back" onclick="goToStep(2)">← Voltar</button>
-            <button class="btn-primary" id="btn-submit" onclick="submitTicket()">Enviar Chamado</button>
+            <button class="btn-back" onclick="backFromDetails()">← Voltar</button>
+            <button class="btn-primary" onclick="goToConfirm()">Continuar →</button>
         </div>
     </div>
 
-    <!-- Passo 4: Sucesso -->
+    <!-- Passo 4: Confirmação de e-mail -->
+    <div class="step" id="step-4">
+        <h3 style="font-size:16px;font-weight:600;color:#fff;margin:0 0 6px;">Confirme seu e-mail</h3>
+        <p style="font-size:13px;color:#888;margin:0 0 20px;">É por aqui que vamos te avisar sobre o andamento do seu chamado.</p>
+        <div style="margin-bottom:20px;">
+            <label class="t-label">Seu e-mail para acompanhamento</label>
+            <input type="email" id="inp-confirm-email" class="t-input" placeholder="joao@empresa.com.br" required>
+        </div>
+        <div style="display:flex;gap:8px;">
+            <button class="btn-back" onclick="goToStep(3)">← Voltar</button>
+            <button class="btn-primary" id="btn-submit" onclick="submitTicket()">Confirmar e Enviar</button>
+        </div>
+    </div>
+
+    <!-- Passo 5: Sucesso -->
     <div class="step" id="step-success" style="text-align:center;padding:16px 0;">
         <div style="width:56px;height:56px;background:#1c1c1c;border:1px solid #2a2a2a;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
             <svg style="width:28px;height:28px;color:#fff;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -216,6 +230,26 @@ function selectCategory(el) {
     el.classList.add('selected');
     selectedCategory = el.dataset.cat;
     document.getElementById('btn-step1').disabled = false;
+}
+
+function backFromDetails() {
+    // O passo 2 é pulado quando nome+email vêm prefixados; nesse caso voltar vai ao passo 1.
+    goToStep((PREFILL_NAME && PREFILL_EMAIL) ? 1 : 2);
+}
+
+function goToConfirm() {
+    const title = document.getElementById('inp-title').value.trim();
+    const desc = document.getElementById('inp-desc').value.trim();
+    if (!title) { document.getElementById('inp-title').focus(); return; }
+    if (!desc) { document.getElementById('inp-desc').focus(); return; }
+    // Pré-preenche o e-mail de confirmação com o que já temos (sessão/etapa 2), editável.
+    const confirmEl = document.getElementById('inp-confirm-email');
+    if (!confirmEl.value.trim()) {
+        const known = document.getElementById('inp-email').value.trim();
+        if (known) confirmEl.value = known;
+    }
+    goToStep(4);
+    confirmEl.focus();
 }
 
 function goToStep(n) {
@@ -297,9 +331,14 @@ async function submitTicket() {
     const title = document.getElementById('inp-title').value.trim();
     const desc = document.getElementById('inp-desc').value.trim();
     const name = document.getElementById('inp-name').value.trim();
-    const email = document.getElementById('inp-email').value.trim();
+    // E-mail final = o confirmado no último passo (cai pro da etapa 2/sessão se vazio).
+    const email = (document.getElementById('inp-confirm-email').value || document.getElementById('inp-email').value).trim();
 
     if (!title || !desc) { return; }
+    if (!email || !email.includes('@')) {
+        document.getElementById('inp-confirm-email').focus();
+        return;
+    }
 
     const btn = document.getElementById('btn-submit');
     btn.disabled = true;
@@ -335,6 +374,7 @@ function resetForm() {
     document.getElementById('btn-step1').disabled = true;
     document.getElementById('inp-name').value = '';
     document.getElementById('inp-email').value = '';
+    document.getElementById('inp-confirm-email').value = '';
     document.getElementById('inp-title').value = '';
     document.getElementById('inp-desc').value = '';
     document.getElementById('file-list').innerHTML = '';

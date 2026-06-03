@@ -114,6 +114,18 @@ function openTaskModal(task = null, status = 'TODO') {
                     task.requester?.company || '-';
                 document.getElementById('ticket-category-display').textContent =
                     task.category || '-';
+
+                // E-mail de contato (clicável para o dev responder)
+                const emailEl = document.getElementById('ticket-requester-email');
+                if (emailEl) {
+                    const email = task.requesterEmail || task.requester?.email || '';
+                    emailEl.textContent = email || '-';
+                    if (email) { emailEl.href = 'mailto:' + email; emailEl.classList.remove('pointer-events-none'); }
+                    else { emailEl.removeAttribute('href'); emailEl.classList.add('pointer-events-none'); }
+                }
+
+                // Anexos enviados pelo solicitante
+                renderTicketAttachments(task.attachments);
             } else {
                 ticketSection.classList.add('hidden');
             }
@@ -163,6 +175,35 @@ function openTaskModal(task = null, status = 'TODO') {
 
     loadBoardMembersInModal();
     modal.classList.remove('hidden');
+}
+
+// Renderiza os anexos do ticket (imagens como thumbnail, demais como link).
+// As URLs ficam fora do prefixo /api (servidas em /uploads pelo backend).
+function renderTicketAttachments(attachmentsJson) {
+    const block = document.getElementById('ticket-attachments-block');
+    const list = document.getElementById('ticket-attachments-list');
+    if (!block || !list) return;
+    list.innerHTML = '';
+
+    let attachments = [];
+    try { attachments = attachmentsJson ? JSON.parse(attachmentsJson) : []; } catch { attachments = []; }
+
+    if (!attachments.length) { block.classList.add('hidden'); return; }
+
+    const host = API_BASE_URL.replace('/api', '');
+    attachments.forEach(path => {
+        const url = host + path;
+        const a = document.createElement('a');
+        a.href = url; a.target = '_blank'; a.rel = 'noopener';
+        if (/\.(png|jpe?g|gif|webp|bmp)$/i.test(path)) {
+            a.innerHTML = `<img src="${url}" alt="anexo" style="width:96px;height:72px;object-fit:cover;border-radius:8px;border:1px solid #2a2a2a;cursor:pointer;">`;
+        } else {
+            a.style.cssText = 'display:flex;align-items:center;gap:8px;background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:8px 12px;text-decoration:none;color:#e0e0e0;font-size:13px;';
+            a.innerHTML = `<svg style="width:16px;height:16px;flex-shrink:0;color:#888" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg><span style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${path.split('/').pop()}</span>`;
+        }
+        list.appendChild(a);
+    });
+    block.classList.remove('hidden');
 }
 
 // ─── Subtasks ────────────────────────────────────────────────────────────────

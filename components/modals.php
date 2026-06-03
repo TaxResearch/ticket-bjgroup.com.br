@@ -133,8 +133,16 @@
                             <p id="ticket-requester-company" class="text-sm text-white font-medium"></p>
                         </div>
                         <div class="col-span-2">
+                            <p class="text-xs text-[#555555]">E-mail para contato</p>
+                            <a id="ticket-requester-email" href="#" class="text-sm text-sky-400 hover:text-sky-300 font-medium break-all"></a>
+                        </div>
+                        <div class="col-span-2">
                             <p class="text-xs text-[#555555]">Categoria</p>
                             <p id="ticket-category-display" class="text-sm text-white"></p>
+                        </div>
+                        <div class="col-span-2 hidden" id="ticket-attachments-block">
+                            <p class="text-xs text-[#555555] mb-1">Anexos</p>
+                            <div id="ticket-attachments-list" class="flex flex-wrap gap-2"></div>
                         </div>
                     </div>
                 </div>
