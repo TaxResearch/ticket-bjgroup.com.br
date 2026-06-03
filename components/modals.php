@@ -121,35 +121,46 @@
             <div id="modal-panel-atribuicao" class="hidden">
 
                 <!-- Info do solicitante (apenas para tickets) -->
-                <div id="ticket-info-section" class="mb-4 p-3 bg-[#1c1c1c] rounded-lg border border-[#2a2a2a] hidden">
-                    <p class="text-xs font-semibold text-[#888888] mb-2 uppercase tracking-wider">Informações do Ticket</p>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <p class="text-xs text-[#555555]">Solicitante</p>
-                            <p id="ticket-requester-name" class="text-sm text-white font-medium"></p>
+                <div id="ticket-info-section" class="mb-5 hidden">
+                    <p class="text-xs font-semibold text-[#888888] mb-2.5 uppercase tracking-wider">Informações do Ticket</p>
+
+                    <div class="rounded-xl border border-[#2a2a2a] bg-[#1c1c1c] divide-y divide-[#262626]">
+                        <!-- Solicitante -->
+                        <div class="flex items-center gap-3 px-4 py-3">
+                            <svg class="w-4 h-4 text-[#5a5a5a] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                            <span class="text-xs text-[#777777] w-24 flex-shrink-0">Solicitante</span>
+                            <span id="ticket-requester-name" class="text-sm text-white font-medium truncate min-w-0"></span>
                         </div>
-                        <div>
-                            <p class="text-xs text-[#555555]">Empresa</p>
-                            <p id="ticket-requester-company" class="text-sm text-white font-medium"></p>
+                        <!-- Empresa -->
+                        <div class="flex items-center gap-3 px-4 py-3">
+                            <svg class="w-4 h-4 text-[#5a5a5a] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m-5 0v-5a1 1 0 011-1h2a1 1 0 011 1v5m0 0h4M9 7h1m-1 4h1m4-4h1m-1 4h1"/></svg>
+                            <span class="text-xs text-[#777777] w-24 flex-shrink-0">Empresa</span>
+                            <span id="ticket-requester-company" class="text-sm text-white font-medium truncate min-w-0"></span>
                         </div>
-                        <div class="col-span-2">
-                            <p class="text-xs text-[#555555]">E-mail para contato</p>
-                            <a id="ticket-requester-email" href="#" class="text-sm text-sky-400 hover:text-sky-300 font-medium break-all"></a>
+                        <!-- E-mail -->
+                        <div class="flex items-center gap-3 px-4 py-3">
+                            <svg class="w-4 h-4 text-[#5a5a5a] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            <span class="text-xs text-[#777777] w-24 flex-shrink-0">E-mail</span>
+                            <a id="ticket-requester-email" href="#" class="text-sm text-sky-400 hover:text-sky-300 font-medium truncate min-w-0"></a>
                         </div>
-                        <div class="col-span-2">
-                            <p class="text-xs text-[#555555]">Categoria</p>
-                            <p id="ticket-category-display" class="text-sm text-white"></p>
+                        <!-- Categoria -->
+                        <div class="flex items-center gap-3 px-4 py-3">
+                            <svg class="w-4 h-4 text-[#5a5a5a] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-5 5a2 2 0 01-2.828 0l-7-7A2 2 0 013 9.172V5a2 2 0 012-2z"/></svg>
+                            <span class="text-xs text-[#777777] w-24 flex-shrink-0">Categoria</span>
+                            <span id="ticket-category-display" class="text-sm text-white truncate min-w-0"></span>
                         </div>
-                        <div class="col-span-2 hidden" id="ticket-attachments-block">
-                            <p class="text-xs text-[#555555] mb-1">Anexos</p>
-                            <div id="ticket-attachments-list" class="flex flex-wrap gap-2"></div>
-                        </div>
+                    </div>
+
+                    <!-- Anexos -->
+                    <div id="ticket-attachments-block" class="mt-3 hidden">
+                        <p class="text-xs text-[#777777] mb-2">Anexos</p>
+                        <div id="ticket-attachments-list" class="flex flex-wrap gap-2"></div>
                     </div>
                 </div>
 
                 <div>
-                    <label for="task-assigned-user" class="block text-xs font-medium text-[#888888] mb-1">Responsável</label>
-                    <select id="task-assigned-user" name="assignedUserId" class="w-full bg-[#1c1c1c] border border-[#2a2a2a] rounded p-2 text-white focus:border-white focus:outline-none">
+                    <label for="task-assigned-user" class="block text-xs font-medium text-[#888888] mb-1.5">Responsável</label>
+                    <select id="task-assigned-user" name="assignedUserId" class="w-full bg-[#1c1c1c] border border-[#2a2a2a] rounded-lg p-2.5 text-white text-sm focus:border-white focus:outline-none">
                         <option value="">Ninguém atribuído</option>
                     </select>
                 </div>

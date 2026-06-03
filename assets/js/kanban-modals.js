@@ -190,7 +190,7 @@ function renderTicketAttachments(attachmentsJson) {
 
     if (!attachments.length) { block.classList.add('hidden'); return; }
 
-    const host = API_BASE_URL.replace('/api', '');
+    const host = API_BASE_URL.replace(/\/api\/?$/, '');
     attachments.forEach(path => {
         const url = host + path;
         const a = document.createElement('a');

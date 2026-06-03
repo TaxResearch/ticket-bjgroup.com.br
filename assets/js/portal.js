@@ -482,7 +482,7 @@ function openTicketDetail(ticket) {
     if (attachments.length > 0) {
         attachments.forEach(path => {
             const isImage = /\.(png|jpe?g|gif|webp|bmp)$/i.test(path);
-            const url = API_BASE_URL.replace('/api', '') + path;
+            const url = API_BASE_URL.replace(/\/api\/?$/, '') + path;
             if (isImage) {
                 const a = document.createElement('a');
                 a.href = url;
