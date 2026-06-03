@@ -1,3 +1,6 @@
+# Servir index.php como pagina inicial (NUNCA um index.html legado)
+DirectoryIndex index.php index.html
+
 # Habilitar rewrite engine
 RewriteEngine On
 
@@ -39,4 +42,15 @@ Options -Indexes
     Header set X-XSS-Protection "1; mode=block"
     Header set X-Content-Type-Options "nosniff"
     Header set X-Frame-Options "SAMEORIGIN"
+</IfModule>
+
+# Permitir que SOMENTE o formulario embutido (ticket.php) seja carregado em
+# iframe pelas plataformas da holding (widget "Solicitar Suporte"). O resto do
+# site continua SAMEORIGIN. Usa CSP frame-ancestors (navegadores modernos
+# ignoram X-Frame-Options quando ha frame-ancestors).
+<IfModule mod_headers.c>
+    <Files "ticket.php">
+        Header unset X-Frame-Options
+        Header always set Content-Security-Policy "frame-ancestors 'self' https://config.previnity.com.br https://*.previnity.com.br https://*.bjgroup.com.br"
+    </Files>
 </IfModule>
