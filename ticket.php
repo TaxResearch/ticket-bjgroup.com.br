@@ -50,6 +50,14 @@ body { margin: 0; }
 .file-item button:hover { color: #fff; }
 </style>
 
+<?php if ($embedded): ?>
+<style>
+/* No iframe do widget o próprio iframe já é o card (fundo + cantos arredondados).
+   O wrap preenche tudo e dispensa borda/raio próprios, evitando a linha dupla. */
+.ticket-wrap { max-width: none; border: none; border-radius: 0; }
+</style>
+<?php endif; ?>
+
 <div class="ticket-wrap" id="ticket-wrap">
     <div style="text-align:center;margin-bottom:24px;">
         <img src="<?php echo url('img/logo-white.png'); ?>" alt="BJGROUP" style="height:36px;margin:0 auto 12px;display:block;" onerror="this.style.display='none'">
