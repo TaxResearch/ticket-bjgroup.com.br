@@ -142,6 +142,7 @@ body { margin: 0; }
             <div>
                 <label class="t-label">Seu e-mail para acompanhamento</label>
                 <input type="email" id="inp-email" class="t-input" placeholder="joao@empresa.com.br" required>
+                <p id="email-hint" style="display:none;font-size:11px;color:#666;margin:6px 0 0;">🔒 Vinculado ao seu login — é assim que reunimos todos os seus chamados.</p>
             </div>
         </div>
         <div style="display:flex;gap:8px;">
@@ -182,9 +183,18 @@ const SUBMIT_URL = TOKEN ? `${API_URL}/tasks/ticket/${TOKEN}` : `${API_URL}/task
 let selectedCategory = null;
 let selectedFiles = [];
 
-// Pré-preenche nome/e-mail (sessão do painel) — editáveis, confirmados no último passo.
+// Pré-preenche o nome (editável — é só rótulo) e o e-mail.
 if (PREFILL_NAME) document.getElementById('inp-name').value = PREFILL_NAME;
-if (PREFILL_EMAIL) document.getElementById('inp-email').value = PREFILL_EMAIL;
+if (PREFILL_EMAIL) {
+    const emailEl = document.getElementById('inp-email');
+    emailEl.value = PREFILL_EMAIL;
+    // E-mail do login = identidade estável: trava para não fragmentar o histórico do solicitante.
+    emailEl.readOnly = true;
+    emailEl.style.opacity = '0.7';
+    emailEl.style.cursor = 'not-allowed';
+    const hint = document.getElementById('email-hint');
+    if (hint) hint.style.display = 'block';
+}
 
 // Fluxo de passos usado pelo indicador de progresso.
 const STEP_FLOW = [
