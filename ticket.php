@@ -64,9 +64,9 @@ body { margin: 0; }
 <div class="ticket-wrap" id="ticket-wrap">
     <?php if ($embedded): ?>
     <button type="button" onclick="window.parent.postMessage('ticket-close','*')" aria-label="Fechar" title="Fechar"
-        style="position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;background:#1c1c1c;border:1px solid #2a2a2a;color:#999;font-size:22px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;z-index:5;"
+        style="position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;background:#1c1c1c;border:1px solid #2a2a2a;color:#999;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;z-index:5;padding:0;"
         onmouseover="this.style.color='#fff';this.style.borderColor='#555';this.style.background='#222';"
-        onmouseout="this.style.color='#999';this.style.borderColor='#2a2a2a';this.style.background='#1c1c1c';">&times;</button>
+        onmouseout="this.style.color='#999';this.style.borderColor='#2a2a2a';this.style.background='#1c1c1c';"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="display:block;"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     <?php endif; ?>
     <div style="text-align:center;margin-bottom:24px;">
         <img src="<?php echo url('img/logo-white.png'); ?>" alt="BJGROUP" style="height:44px;margin:0 auto 14px;display:block;" onerror="this.style.display='none'">
