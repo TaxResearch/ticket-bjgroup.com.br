@@ -39,9 +39,10 @@ body { margin: 0; }
 .btn-primary:disabled { background: #333; color: #666; cursor: not-allowed; }
 .btn-back { background: transparent; border: 1px solid #2a2a2a; color: #888; font-size: 13px; padding: 8px 16px; border-radius: 8px; cursor: pointer; transition: all .15s; }
 .btn-back:hover { border-color: #555; color: #fff; }
-.step-dots { display: flex; gap: 6px; justify-content: center; margin-bottom: 24px; }
-.dot { width: 6px; height: 6px; border-radius: 50%; background: #2a2a2a; transition: background .2s; }
-.dot.active { background: #fff; }
+.step-dots { display: flex; gap: 6px; justify-content: center; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: #2a2a2a; transition: all .25s; }
+.dot.done { background: #666; }
+.dot.current { background: #fff; width: 24px; border-radius: 4px; }
 .file-drop { border: 1px dashed #2a2a2a; border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: border-color .15s; }
 .file-drop:hover { border-color: #555; }
 .file-list { margin-top: 8px; display: flex; flex-direction: column; gap: 4px; }
@@ -64,10 +65,9 @@ body { margin: 0; }
         <p style="font-size:13px;color:#888;margin:0;" id="board-name">Carregando...</p>
     </div>
 
-    <div class="step-dots" id="step-dots">
-        <div class="dot active" data-step="1"></div>
-        <div class="dot" data-step="2"></div>
-        <div class="dot" data-step="3"></div>
+    <div id="step-indicator" style="margin-bottom:24px;">
+        <p id="step-label" style="text-align:center;font-size:12px;color:#888;margin:0 0 8px;font-weight:600;letter-spacing:.02em;"></p>
+        <div class="step-dots" id="step-dots"></div>
     </div>
 
     <!-- Passo 1: Categoria -->
@@ -99,28 +99,8 @@ body { margin: 0; }
         <button class="btn-primary" id="btn-step1" disabled onclick="goToStep(2)">Continuar →</button>
     </div>
 
-    <!-- Passo 2: Identificação -->
+    <!-- Passo 2: Detalhes + Arquivos -->
     <div class="step" id="step-2">
-        <h3 style="font-size:16px;font-weight:600;color:#fff;margin:0 0 6px;">Quem está abrindo?</h3>
-        <p style="font-size:13px;color:#888;margin:0 0 20px;">Informe seus dados para contato.</p>
-        <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:20px;">
-            <div>
-                <label class="t-label">Seu nome completo</label>
-                <input type="text" id="inp-name" class="t-input" placeholder="João Silva" required>
-            </div>
-            <div>
-                <label class="t-label">Seu e-mail</label>
-                <input type="email" id="inp-email" class="t-input" placeholder="joao@empresa.com.br" required>
-            </div>
-        </div>
-        <div style="display:flex;gap:8px;">
-            <button class="btn-back" onclick="goToStep(1)">← Voltar</button>
-            <button class="btn-primary" onclick="validateStep2()">Continuar →</button>
-        </div>
-    </div>
-
-    <!-- Passo 3: Detalhes + Arquivos -->
-    <div class="step" id="step-3">
         <h3 style="font-size:16px;font-weight:600;color:#fff;margin:0 0 6px;">Detalhes do chamado</h3>
         <p style="font-size:13px;color:#888;margin:0 0 20px;">Descreva o problema com o máximo de detalhes.</p>
         <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:20px;">
@@ -145,26 +125,32 @@ body { margin: 0; }
             </div>
         </div>
         <div style="display:flex;gap:8px;">
-            <button class="btn-back" onclick="backFromDetails()">← Voltar</button>
+            <button class="btn-back" onclick="goToStep(1)">← Voltar</button>
             <button class="btn-primary" onclick="goToConfirm()">Continuar →</button>
         </div>
     </div>
 
-    <!-- Passo 4: Confirmação de e-mail -->
-    <div class="step" id="step-4">
-        <h3 style="font-size:16px;font-weight:600;color:#fff;margin:0 0 6px;">Confirme seu e-mail</h3>
-        <p style="font-size:13px;color:#888;margin:0 0 20px;">É por aqui que vamos te avisar sobre o andamento do seu chamado.</p>
-        <div style="margin-bottom:20px;">
-            <label class="t-label">Seu e-mail para acompanhamento</label>
-            <input type="email" id="inp-confirm-email" class="t-input" placeholder="joao@empresa.com.br" required>
+    <!-- Passo 3: Seus dados (nome + e-mail) -->
+    <div class="step" id="step-3">
+        <h3 style="font-size:16px;font-weight:600;color:#fff;margin:0 0 6px;">Quase lá! Confirme seus dados</h3>
+        <p style="font-size:13px;color:#888;margin:0 0 20px;">É com esses dados que vamos te identificar e avisar sobre o andamento do chamado.</p>
+        <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:20px;">
+            <div>
+                <label class="t-label">Seu nome completo</label>
+                <input type="text" id="inp-name" class="t-input" placeholder="João Silva" required>
+            </div>
+            <div>
+                <label class="t-label">Seu e-mail para acompanhamento</label>
+                <input type="email" id="inp-email" class="t-input" placeholder="joao@empresa.com.br" required>
+            </div>
         </div>
         <div style="display:flex;gap:8px;">
-            <button class="btn-back" onclick="goToStep(3)">← Voltar</button>
-            <button class="btn-primary" id="btn-submit" onclick="submitTicket()">Confirmar e Enviar</button>
+            <button class="btn-back" onclick="goToStep(2)">← Voltar</button>
+            <button class="btn-primary" id="btn-submit" onclick="submitTicket()">Enviar Chamado</button>
         </div>
     </div>
 
-    <!-- Passo 5: Sucesso -->
+    <!-- Sucesso -->
     <div class="step" id="step-success" style="text-align:center;padding:16px 0;">
         <div style="width:56px;height:56px;background:#1c1c1c;border:1px solid #2a2a2a;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
             <svg style="width:28px;height:28px;color:#fff;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -196,19 +182,17 @@ const SUBMIT_URL = TOKEN ? `${API_URL}/tasks/ticket/${TOKEN}` : `${API_URL}/task
 let selectedCategory = null;
 let selectedFiles = [];
 
-// Pre-fill identity fields if passed via URL
-if (PREFILL_NAME) {
-    document.getElementById('inp-name').value = PREFILL_NAME;
-    document.getElementById('inp-name').readOnly = true;
-    document.getElementById('inp-name').style.opacity = '0.6';
-    document.getElementById('inp-name').style.cursor = 'default';
-}
-if (PREFILL_EMAIL) {
-    document.getElementById('inp-email').value = PREFILL_EMAIL;
-    document.getElementById('inp-email').readOnly = true;
-    document.getElementById('inp-email').style.opacity = '0.6';
-    document.getElementById('inp-email').style.cursor = 'default';
-}
+// Pré-preenche nome/e-mail (sessão do painel) — editáveis, confirmados no último passo.
+if (PREFILL_NAME) document.getElementById('inp-name').value = PREFILL_NAME;
+if (PREFILL_EMAIL) document.getElementById('inp-email').value = PREFILL_EMAIL;
+
+// Fluxo de passos usado pelo indicador de progresso.
+const STEP_FLOW = [
+    { id: 1, label: 'Categoria' },
+    { id: 2, label: 'Detalhes' },
+    { id: 3, label: 'Seus dados' },
+];
+updateStepIndicator(1);
 
 // Auto-resize: informa a altura real do conteúdo ao widget pai (modo embedded),
 // para o iframe acompanhar o tamanho a cada passo e evitar espaço vazio/overflow.
@@ -230,7 +214,7 @@ fetch(BOARD_INFO_URL)
     })
     .catch(() => {
         showStep('step-error');
-        document.getElementById('step-dots').style.display = 'none';
+        document.getElementById('step-indicator').style.display = 'none';
     });
 
 function selectCategory(el) {
@@ -240,34 +224,20 @@ function selectCategory(el) {
     document.getElementById('btn-step1').disabled = false;
 }
 
-function backFromDetails() {
-    // O passo 2 é pulado quando nome+email vêm prefixados; nesse caso voltar vai ao passo 1.
-    goToStep((PREFILL_NAME && PREFILL_EMAIL) ? 1 : 2);
-}
-
 function goToConfirm() {
     const title = document.getElementById('inp-title').value.trim();
     const desc = document.getElementById('inp-desc').value.trim();
     if (!title) { document.getElementById('inp-title').focus(); return; }
     if (!desc) { document.getElementById('inp-desc').focus(); return; }
-    // Pré-preenche o e-mail de confirmação com o que já temos (sessão/etapa 2), editável.
-    const confirmEl = document.getElementById('inp-confirm-email');
-    if (!confirmEl.value.trim()) {
-        const known = document.getElementById('inp-email').value.trim();
-        if (known) confirmEl.value = known;
-    }
-    goToStep(4);
-    confirmEl.focus();
+    goToStep(3);
+    const nameEl = document.getElementById('inp-name');
+    (nameEl.value.trim() ? document.getElementById('inp-email') : nameEl).focus();
 }
 
 function goToStep(n) {
-    // Skip step 2 if name and email are pre-filled
-    if (n === 2 && PREFILL_NAME && PREFILL_EMAIL) { n = 3; }
     document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
     document.getElementById('step-' + n).classList.add('active');
-    document.querySelectorAll('.dot').forEach((d, i) => {
-        d.classList.toggle('active', i < n);
-    });
+    updateStepIndicator(n);
 }
 
 function showStep(id) {
@@ -275,12 +245,16 @@ function showStep(id) {
     document.getElementById(id).classList.add('active');
 }
 
-function validateStep2() {
-    const name = document.getElementById('inp-name').value.trim();
-    const email = document.getElementById('inp-email').value.trim();
-    if (!name) { document.getElementById('inp-name').focus(); return; }
-    if (!email || !email.includes('@')) { document.getElementById('inp-email').focus(); return; }
-    goToStep(3);
+// Indicador de progresso: destaca o passo atual e mostra "Passo X de N · Nome".
+function updateStepIndicator(n) {
+    const dots = document.getElementById('step-dots');
+    const label = document.getElementById('step-label');
+    const idx = STEP_FLOW.findIndex(s => s.id === n);
+    if (idx === -1) return;
+    dots.innerHTML = STEP_FLOW.map((s, i) =>
+        `<span class="dot ${i === idx ? 'current' : (i < idx ? 'done' : '')}"></span>`
+    ).join('');
+    label.textContent = `Passo ${idx + 1} de ${STEP_FLOW.length} · ${STEP_FLOW[idx].label}`;
 }
 
 function addFiles(files) {
@@ -304,8 +278,8 @@ function flashTicketDrop() {
 }
 
 document.addEventListener('paste', (e) => {
-    const step3 = document.getElementById('step-3');
-    if (!step3 || !step3.classList.contains('active')) return;
+    const step2 = document.getElementById('step-2');
+    if (!step2 || !step2.classList.contains('active')) return;
     const items = Array.from(e.clipboardData?.items || []);
     const imageFiles = items
         .filter(item => item.kind === 'file' && item.type.startsWith('image/'))
@@ -339,14 +313,11 @@ async function submitTicket() {
     const title = document.getElementById('inp-title').value.trim();
     const desc = document.getElementById('inp-desc').value.trim();
     const name = document.getElementById('inp-name').value.trim();
-    // E-mail final = o confirmado no último passo (cai pro da etapa 2/sessão se vazio).
-    const email = (document.getElementById('inp-confirm-email').value || document.getElementById('inp-email').value).trim();
+    const email = document.getElementById('inp-email').value.trim();
 
-    if (!title || !desc) { return; }
-    if (!email || !email.includes('@')) {
-        document.getElementById('inp-confirm-email').focus();
-        return;
-    }
+    if (!title || !desc) { goToStep(2); return; }
+    if (!name) { document.getElementById('inp-name').focus(); return; }
+    if (!email || !email.includes('@')) { document.getElementById('inp-email').focus(); return; }
 
     const btn = document.getElementById('btn-submit');
     btn.disabled = true;
@@ -363,7 +334,7 @@ async function submitTicket() {
     try {
         const res = await fetch(SUBMIT_URL, { method: 'POST', body: fd });
         if (!res.ok) throw new Error();
-        document.getElementById('step-dots').style.display = 'none';
+        document.getElementById('step-indicator').style.display = 'none';
         showStep('step-success');
         if (EMBEDDED) {
             setTimeout(() => window.parent.postMessage('ticket-submitted', '*'), 500);
@@ -380,14 +351,16 @@ function resetForm() {
     selectedFiles = [];
     document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('selected'));
     document.getElementById('btn-step1').disabled = true;
-    document.getElementById('inp-name').value = '';
-    document.getElementById('inp-email').value = '';
-    document.getElementById('inp-confirm-email').value = '';
+    document.getElementById('inp-name').value = PREFILL_NAME || '';
+    document.getElementById('inp-email').value = PREFILL_EMAIL || '';
     document.getElementById('inp-title').value = '';
     document.getElementById('inp-desc').value = '';
     document.getElementById('file-list').innerHTML = '';
     document.getElementById('file-drop').style.display = '';
-    document.getElementById('step-dots').style.display = 'flex';
+    document.getElementById('step-indicator').style.display = '';
+    const submitBtn = document.getElementById('btn-submit');
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Enviar Chamado';
     goToStep(1);
 }
 </script>
