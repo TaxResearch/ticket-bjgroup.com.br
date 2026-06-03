@@ -49,14 +49,6 @@ $prefillEmail = trim($_GET['email'] ?? '');
 .file-item button:hover { color: #fff; }
 </style>
 
-<?php if (!$token): ?>
-<div class="ticket-wrap" style="text-align:center;padding:48px 32px;">
-    <div style="font-size:48px;margin-bottom:16px;">⚠️</div>
-    <h2 style="color:#fff;font-size:18px;margin:0 0 8px;">Link inválido</h2>
-    <p style="color:#888;font-size:14px;margin:0;">O link está incompleto ou incorreto.</p>
-</div>
-<?php else: ?>
-
 <div class="ticket-wrap" id="ticket-wrap">
     <div style="text-align:center;margin-bottom:24px;">
         <img src="<?php echo url('img/logo-white.png'); ?>" alt="BJGROUP" style="height:36px;margin:0 auto 12px;display:block;" onerror="this.style.display='none'">
@@ -175,6 +167,9 @@ const TOKEN = '<?php echo htmlspecialchars($token, ENT_QUOTES); ?>';
 const EMBEDDED = <?php echo $embedded ? 'true' : 'false'; ?>;
 const PREFILL_NAME = '<?php echo htmlspecialchars($prefillName, ENT_QUOTES); ?>';
 const PREFILL_EMAIL = '<?php echo htmlspecialchars($prefillEmail, ENT_QUOTES); ?>';
+// Sem token => kanban coletivo (board principal). Com token => board público específico.
+const BOARD_INFO_URL = TOKEN ? `${API_URL}/boards/public/${TOKEN}` : `${API_URL}/boards/public-main`;
+const SUBMIT_URL = TOKEN ? `${API_URL}/tasks/ticket/${TOKEN}` : `${API_URL}/tasks/ticket`;
 let selectedCategory = null;
 let selectedFiles = [];
 
@@ -192,8 +187,8 @@ if (PREFILL_EMAIL) {
     document.getElementById('inp-email').style.cursor = 'default';
 }
 
-// Validate token on load
-fetch(`${API_URL}/boards/public/${TOKEN}`)
+// Valida o board (por token ou board principal) ao carregar
+fetch(BOARD_INFO_URL)
     .then(r => { if (!r.ok) throw new Error(); return r.json(); })
     .then(data => {
         document.getElementById('board-name').textContent = data.name || 'BJGROUP Suporte';
@@ -306,7 +301,7 @@ async function submitTicket() {
     selectedFiles.forEach(f => fd.append('attachments', f));
 
     try {
-        const res = await fetch(`${API_URL}/tasks/ticket/${TOKEN}`, { method: 'POST', body: fd });
+        const res = await fetch(SUBMIT_URL, { method: 'POST', body: fd });
         if (!res.ok) throw new Error();
         document.getElementById('step-dots').style.display = 'none';
         showStep('step-success');
@@ -335,7 +330,6 @@ function resetForm() {
     goToStep(1);
 }
 </script>
-<?php endif; ?>
 
 <?php if (!$embedded): ?>
 </body>
