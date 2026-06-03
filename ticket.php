@@ -20,24 +20,26 @@ $prefillEmail = trim($_GET['email'] ?? '');
 
 <style>
 body { margin: 0; }
-.ticket-wrap { width: 100%; max-width: 560px; margin: 0 auto; background: #141414; border: 1px solid #2a2a2a; border-radius: 16px; padding: 32px; box-sizing: border-box; }
+.ticket-wrap { width: 100%; max-width: 720px; margin: 0 auto; background: #141414; border: 1px solid #2a2a2a; border-radius: 16px; padding: 40px; box-sizing: border-box; }
 .step { display: none; }
 .step.active { display: block; }
-.cat-card { background: #1c1c1c; border: 1px solid #2a2a2a; border-radius: 12px; padding: 16px; cursor: pointer; transition: all .15s; text-align: center; }
+.t-title { font-size: 21px; font-weight: 600; color: #fff; margin: 0 0 8px; }
+.t-sub { font-size: 15px; color: #888; margin: 0 0 24px; }
+.cat-card { background: #1c1c1c; border: 1px solid #2a2a2a; border-radius: 12px; padding: 22px; cursor: pointer; transition: all .15s; text-align: center; }
 .cat-card:hover { border-color: #555; background: #222; }
 .cat-card.selected { border-color: #fff; background: #1c1c1c; }
 .cat-card.selected .cat-icon { color: #fff; }
-.cat-icon { font-size: 28px; margin-bottom: 8px; color: #888; }
-.cat-label { font-size: 13px; font-weight: 600; color: #fff; }
-.cat-desc { font-size: 11px; color: #888; margin-top: 4px; }
-.t-input { width: 100%; background: #1c1c1c; border: 1px solid #2a2a2a; border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 14px; outline: none; transition: border-color .15s; box-sizing: border-box; }
+.cat-icon { font-size: 34px; margin-bottom: 10px; color: #888; }
+.cat-label { font-size: 15px; font-weight: 600; color: #fff; }
+.cat-desc { font-size: 12px; color: #888; margin-top: 4px; }
+.t-input { width: 100%; background: #1c1c1c; border: 1px solid #2a2a2a; border-radius: 8px; padding: 14px 16px; color: #fff; font-size: 15px; outline: none; transition: border-color .15s; box-sizing: border-box; }
 .t-input:focus { border-color: #555; }
 .t-input::placeholder { color: #444; }
-.t-label { display: block; font-size: 13px; font-weight: 500; color: #888; margin-bottom: 6px; }
-.btn-primary { width: 100%; background: #fff; color: #000; font-weight: 700; font-size: 14px; padding: 11px; border-radius: 8px; border: none; cursor: pointer; transition: background .15s; }
+.t-label { display: block; font-size: 14px; font-weight: 500; color: #888; margin-bottom: 8px; }
+.btn-primary { width: 100%; background: #fff; color: #000; font-weight: 700; font-size: 16px; padding: 15px; border-radius: 8px; border: none; cursor: pointer; transition: background .15s; }
 .btn-primary:hover { background: #e0e0e0; }
 .btn-primary:disabled { background: #333; color: #666; cursor: not-allowed; }
-.btn-back { background: transparent; border: 1px solid #2a2a2a; color: #888; font-size: 13px; padding: 8px 16px; border-radius: 8px; cursor: pointer; transition: all .15s; }
+.btn-back { background: transparent; border: 1px solid #2a2a2a; color: #888; font-size: 15px; padding: 12px 20px; border-radius: 8px; cursor: pointer; transition: all .15s; }
 .btn-back:hover { border-color: #555; color: #fff; }
 .step-dots { display: flex; gap: 6px; justify-content: center; }
 .dot { width: 7px; height: 7px; border-radius: 50%; background: #2a2a2a; transition: all .25s; }
@@ -61,19 +63,19 @@ body { margin: 0; }
 
 <div class="ticket-wrap" id="ticket-wrap">
     <div style="text-align:center;margin-bottom:24px;">
-        <img src="<?php echo url('img/logo-white.png'); ?>" alt="BJGROUP" style="height:36px;margin:0 auto 12px;display:block;" onerror="this.style.display='none'">
-        <p style="font-size:13px;color:#888;margin:0;" id="board-name">Carregando...</p>
+        <img src="<?php echo url('img/logo-white.png'); ?>" alt="BJGROUP" style="height:44px;margin:0 auto 14px;display:block;" onerror="this.style.display='none'">
+        <p style="font-size:15px;color:#888;margin:0;" id="board-name">Carregando...</p>
     </div>
 
     <div id="step-indicator" style="margin-bottom:24px;">
-        <p id="step-label" style="text-align:center;font-size:12px;color:#888;margin:0 0 8px;font-weight:600;letter-spacing:.02em;"></p>
+        <p id="step-label" style="text-align:center;font-size:13px;color:#888;margin:0 0 10px;font-weight:600;letter-spacing:.02em;"></p>
         <div class="step-dots" id="step-dots"></div>
     </div>
 
     <!-- Passo 1: Categoria -->
     <div class="step active" id="step-1">
-        <h3 style="font-size:16px;font-weight:600;color:#fff;margin:0 0 6px;">Qual é o assunto?</h3>
-        <p style="font-size:13px;color:#888;margin:0 0 20px;">Escolha a categoria do seu chamado.</p>
+        <h3 class="t-title">Qual é o assunto?</h3>
+        <p class="t-sub">Escolha a categoria do seu chamado.</p>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">
             <div class="cat-card" data-cat="Bug" onclick="selectCategory(this)">
                 <div class="cat-icon">🐛</div>
@@ -101,8 +103,8 @@ body { margin: 0; }
 
     <!-- Passo 2: Detalhes + Arquivos -->
     <div class="step" id="step-2">
-        <h3 style="font-size:16px;font-weight:600;color:#fff;margin:0 0 6px;">Detalhes do chamado</h3>
-        <p style="font-size:13px;color:#888;margin:0 0 20px;">Descreva o problema com o máximo de detalhes.</p>
+        <h3 class="t-title">Detalhes do chamado</h3>
+        <p class="t-sub">Descreva o problema com o máximo de detalhes.</p>
         <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:20px;">
             <div>
                 <label class="t-label">Assunto (resumo em uma linha)</label>
@@ -132,8 +134,8 @@ body { margin: 0; }
 
     <!-- Passo 3: Seus dados (nome + e-mail) -->
     <div class="step" id="step-3">
-        <h3 style="font-size:16px;font-weight:600;color:#fff;margin:0 0 6px;">Quase lá! Confirme seus dados</h3>
-        <p style="font-size:13px;color:#888;margin:0 0 20px;">É com esses dados que vamos te identificar e avisar sobre o andamento do chamado.</p>
+        <h3 class="t-title">Quase lá! Confirme seus dados</h3>
+        <p class="t-sub">É com esses dados que vamos te identificar e avisar sobre o andamento do chamado.</p>
         <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:20px;">
             <div>
                 <label class="t-label">Seu nome completo</label>
