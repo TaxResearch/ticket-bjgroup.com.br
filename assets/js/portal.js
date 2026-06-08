@@ -288,11 +288,16 @@ function openTicketDetail(ticket) {
             const isImage = /\.(png|jpe?g|gif|webp|bmp)$/i.test(path);
             const url = API_BASE_URL.replace(/\/api\/?$/, '') + path;
             if (isImage) {
-                const a = document.createElement('a');
-                a.href = url;
-                a.target = '_blank';
-                a.innerHTML = `<img src="${url}" alt="anexo" style="width:120px;height:90px;object-fit:cover;border-radius:8px;border:1px solid #2a2a2a;cursor:pointer;transition:border-color .15s;" onmouseover="this.style.borderColor='#555'" onmouseout="this.style.borderColor='#2a2a2a'">`;
-                attachList.appendChild(a);
+                // Imagem: abre num lightbox na própria tela (não em nova guia)
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = 'anexo';
+                img.title = 'Clique para ampliar';
+                img.style.cssText = 'width:120px;height:90px;object-fit:cover;border-radius:8px;border:1px solid #2a2a2a;cursor:zoom-in;transition:border-color .15s;';
+                img.onmouseover = () => img.style.borderColor = '#555';
+                img.onmouseout = () => img.style.borderColor = '#2a2a2a';
+                img.addEventListener('click', () => openImageLightbox(url));
+                attachList.appendChild(img);
             } else {
                 const a = document.createElement('a');
                 a.href = url;
@@ -324,4 +329,27 @@ function escapeHtml(str) {
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;');
+}
+
+// Lightbox: abre a imagem do anexo sobre a tela atual (em vez de abrir em nova guia).
+function openImageLightbox(url) {
+    let overlay = document.getElementById('img-lightbox');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'img-lightbox';
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;padding:32px;cursor:zoom-out;opacity:0;transition:opacity .15s;';
+        overlay.innerHTML = `
+            <button type="button" aria-label="Fechar" style="position:absolute;top:18px;right:24px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.12);border:none;color:#fff;font-size:20px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+            <img alt="anexo" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;box-shadow:0 12px 48px rgba(0,0,0,.5);cursor:default;">
+        `;
+        document.body.appendChild(overlay);
+        const close = () => { overlay.style.opacity = '0'; setTimeout(() => { overlay.style.display = 'none'; }, 150); };
+        // Clique fora da imagem (backdrop ou botão ✕) fecha; clique na imagem não.
+        overlay.addEventListener('click', (e) => { if (!e.target.closest('img')) close(); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay.style.display === 'flex') close(); });
+    }
+    overlay.querySelector('img').src = url;
+    overlay.style.display = 'flex';
+    void overlay.offsetWidth;
+    overlay.style.opacity = '1';
 }
