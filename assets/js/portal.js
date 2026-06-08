@@ -1,9 +1,7 @@
 /* BJGROUP Suporte - Portal do Funcionário */
 
-let selectedCategory = null;
-let currentStep = 1;
 let currentUserData = null;
-let portalSelectedFiles = [];
+let portalForm = null;
 
 document.addEventListener('DOMContentLoaded', async function () {
     const token = DevDeck.getAuthToken();
@@ -25,11 +23,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 user.company ? `${user.name} · ${user.company}` : user.name;
             document.getElementById('portal-user-name').classList.remove('hidden');
             document.getElementById('portal-avatar-letter').textContent = letter;
-            // Pré-seleciona a empresa do funcionário (editável — pode abrir p/ outra empresa do grupo)
-            const companySel = document.getElementById('ticket-company');
-            if (companySel && user.company && [...companySel.options].some(o => o.value === user.company)) {
-                companySel.value = user.company;
-            }
         }
     } catch (e) {
         console.error('Erro ao carregar usuário:', e);
@@ -77,71 +70,15 @@ document.addEventListener('DOMContentLoaded', async function () {
     document.getElementById('modal-close-btn').addEventListener('click', closeTicketModal);
     document.getElementById('modal-backdrop').addEventListener('click', closeTicketModal);
 
-    // Categorias
-    document.querySelectorAll('.category-card').forEach(card => {
-        card.addEventListener('click', () => {
-            document.querySelectorAll('.category-card').forEach(c => c.classList.remove('selected'));
-            card.classList.add('selected');
-            selectedCategory = card.dataset.category;
-            const btn = document.getElementById('step-1-next');
-            btn.disabled = false;
-            btn.style.opacity = '1';
-        });
-    });
-
-    // Step navigation
-    document.getElementById('step-1-next').addEventListener('click', () => goToStep(2));
-    document.getElementById('step-2-back').addEventListener('click', () => goToStep(1));
-    document.getElementById('step-2-next').addEventListener('click', () => goToStep(3));
-    document.getElementById('step-3-back').addEventListener('click', () => goToStep(2));
-    document.getElementById('step-3-submit').addEventListener('click', submitTicket);
-    document.getElementById('success-close').addEventListener('click', () => {
-        closeTicketModal();
-        loadMyTickets();
-    });
-    document.getElementById('success-new').addEventListener('click', () => {
-        resetModal();
-        goToStep(1);
-    });
-
-    // Step 2 - habilitar "Próximo" quando empresa selecionada E título preenchido
-    document.getElementById('ticket-title').addEventListener('input', updateStep2Next);
-    document.getElementById('ticket-company').addEventListener('change', updateStep2Next);
-
-    // Keyboard: Enter avança etapa
-    document.getElementById('ticket-title').addEventListener('keydown', function (e) {
-        if (e.key === 'Enter' && !document.getElementById('step-2-next').disabled) {
-            goToStep(3);
-        }
-    });
-
-    // Ctrl+V paste de imagem quando o modal de ticket estiver aberto (step 3)
-    document.addEventListener('paste', (e) => {
-        const modal = document.getElementById('ticket-modal');
-        if (modal.classList.contains('hidden')) return;
-        if (currentStep !== 3) return;
-        const items = Array.from(e.clipboardData?.items || []);
-        const imageFiles = items
-            .filter(item => item.kind === 'file' && item.type.startsWith('image/'))
-            .map(item => {
-                const file = item.getAsFile();
-                const name = `print-${Date.now()}.${file.type.split('/')[1] || 'png'}`;
-                return new File([file], name, { type: file.type });
-            });
-        if (imageFiles.length === 0) return;
-        e.preventDefault();
-        portalAddFiles(imageFiles);
-        flashDropZone();
-    });
+    // Formulário de ticket compartilhado (mesmo do widget público — fonte única dos campos).
+    mountTicketForm();
 
     // Carregar tickets
     await loadMyTickets();
 });
 
 function openTicketModal() {
-    resetModal();
-    currentStep = 0;
-    goToStep(1);
+    if (portalForm) portalForm.reset();
     document.getElementById('ticket-modal').classList.remove('hidden');
     const inner = document.getElementById('ticket-modal-inner');
     if (inner) {
@@ -157,166 +94,18 @@ function closeTicketModal() {
     document.body.style.overflow = '';
 }
 
-function updateStep2Next() {
-    const title = document.getElementById('ticket-title').value.trim();
-    const company = document.getElementById('ticket-company').value;
-    const btn = document.getElementById('step-2-next');
-    const ok = title.length > 0 && !!company;
-    btn.disabled = !ok;
-    btn.style.opacity = ok ? '1' : '0.4';
-}
-
-function resetModal() {
-    selectedCategory = null;
-    portalSelectedFiles = [];
-    document.querySelectorAll('.category-card').forEach(c => c.classList.remove('selected'));
-    document.getElementById('ticket-title').value = '';
-    document.getElementById('ticket-description').value = '';
-    const companySel = document.getElementById('ticket-company');
-    if (companySel) companySel.value = (currentUserData && [...companySel.options].some(o => o.value === currentUserData.company)) ? currentUserData.company : '';
-    document.getElementById('portal-file-list').innerHTML = '';
-    document.getElementById('portal-file-drop').style.display = '';
-    const btn1 = document.getElementById('step-1-next');
-    btn1.disabled = true; btn1.style.opacity = '0.4';
-    const btn2 = document.getElementById('step-2-next');
-    btn2.disabled = true; btn2.style.opacity = '0.4';
-}
-
-function portalAddFiles(files) {
-    files.forEach(f => {
-        if (portalSelectedFiles.length < 5) portalSelectedFiles.push(f);
+// Monta o formulário de ticket compartilhado (mesmo do widget público) no modal do portal.
+// Modo autenticado: sem passo de identidade (vem da sessão), POST em /tasks/employee-submit.
+function mountTicketForm() {
+    const root = document.getElementById('tkf-portal-root');
+    if (!root || typeof TicketForm === 'undefined') return;
+    portalForm = TicketForm.mount(root, {
+        submitUrl: API_BASE_URL + '/tasks/employee-submit',
+        captureIdentity: false,
+        getHeaders: () => ({ 'Authorization': 'Bearer ' + DevDeck.getAuthToken() }),
+        prefill: { company: currentUserData ? currentUserData.company : '' },
+        onSuccess: () => loadMyTickets(),
     });
-    renderPortalFileList();
-}
-
-function portalHandleFiles(input) {
-    portalAddFiles(Array.from(input.files));
-    input.value = '';
-}
-
-function portalRemoveFile(idx) {
-    portalSelectedFiles.splice(idx, 1);
-    renderPortalFileList();
-}
-
-function renderPortalFileList() {
-    const list = document.getElementById('portal-file-list');
-    const drop = document.getElementById('portal-file-drop');
-    list.innerHTML = portalSelectedFiles.map((f, i) => `
-        <div class="portal-file-item">
-            <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:280px;">${escapeHtml(f.name)}</span>
-            <button onclick="portalRemoveFile(${i})" title="Remover">×</button>
-        </div>`).join('');
-    drop.style.display = portalSelectedFiles.length >= 5 ? 'none' : '';
-}
-
-function flashDropZone() {
-    const drop = document.getElementById('portal-file-drop');
-    if (!drop) return;
-    drop.style.borderColor = '#ffffff';
-    drop.style.background = 'rgba(255,255,255,0.04)';
-    setTimeout(() => {
-        drop.style.borderColor = '';
-        drop.style.background = '';
-    }, 600);
-}
-
-function goToStep(step) {
-    const direction = step > currentStep ? 'forward' : 'backward';
-    currentStep = step;
-
-    // Update step indicators
-    [1, 2, 3].forEach(s => {
-        const ind = document.getElementById(`step-${s}-ind`);
-        if (s < step) {
-            ind.className = 'step-indicator step-done';
-            ind.textContent = '✓';
-        } else if (s === step) {
-            ind.className = 'step-indicator step-active';
-            ind.textContent = s;
-        } else {
-            ind.className = 'step-indicator step-inactive';
-            ind.textContent = s;
-        }
-    });
-
-    // Progress bar
-    const progress = step === 1 ? 33 : step === 2 ? 66 : 100;
-    document.getElementById('modal-progress').style.width = progress + '%';
-
-    // Show/hide panels with slide animation
-    const animClass = direction === 'forward' ? 'animate-slide-right' : 'animate-slide-left';
-    [1, 2, 3].forEach(s => {
-        const panel = document.getElementById(`step-${s}`);
-        if (s === step) {
-            panel.classList.remove('hidden', 'animate-slide-right', 'animate-slide-left');
-            void panel.offsetWidth;
-            panel.classList.add(animClass);
-        } else {
-            panel.classList.add('hidden');
-        }
-    });
-    document.getElementById('step-success').classList.add('hidden');
-
-    if (step === 2) {
-        setTimeout(() => document.getElementById('ticket-title').focus(), 100);
-    }
-    if (step === 3) {
-        setTimeout(() => document.getElementById('ticket-description').focus(), 100);
-    }
-}
-
-async function submitTicket() {
-    const title = document.getElementById('ticket-title').value.trim();
-    const description = document.getElementById('ticket-description').value.trim();
-    const company = document.getElementById('ticket-company').value;
-
-    if (!title || !selectedCategory) return;
-    if (!company) { goToStep(2); return; }
-
-    const submitBtn = document.getElementById('step-3-submit');
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Enviando...';
-
-    try {
-        const fd = new FormData();
-        fd.append('title', title);
-        fd.append('category', selectedCategory);
-        fd.append('requesterCompany', company);
-        if (description) fd.append('description', description);
-        portalSelectedFiles.forEach(f => fd.append('attachments', f));
-
-        const token = DevDeck.getAuthToken();
-        const res = await fetch(API_BASE_URL + '/tasks/employee-submit', {
-            method: 'POST',
-            headers: { 'Authorization': 'Bearer ' + token },
-            body: fd
-        });
-        if (!res.ok) {
-            const err = await res.json().catch(() => ({}));
-            throw new Error(err.message || 'Erro ao enviar');
-        }
-        await res.json();
-
-        // Sucesso
-        document.getElementById('step-3').classList.add('hidden');
-        const successPanel = document.getElementById('step-success');
-        successPanel.classList.remove('hidden', 'animate-fade-in-up');
-        void successPanel.offsetWidth;
-        successPanel.classList.add('animate-fade-in-up');
-        document.getElementById('modal-progress').style.width = '100%';
-        [1, 2, 3].forEach(s => {
-            const ind = document.getElementById(`step-${s}-ind`);
-            ind.className = 'step-indicator step-done';
-            ind.textContent = '✓';
-        });
-
-    } catch (err) {
-        console.error('Erro ao enviar ticket:', err);
-        alert('Erro ao enviar o ticket: ' + (err.message || 'Tente novamente.'));
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg> Enviar Ticket`;
-    }
 }
 
 async function loadMyTickets() {

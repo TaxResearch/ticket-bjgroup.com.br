@@ -260,20 +260,8 @@ body { padding: 0 !important; }
     <div class="modal-overlay absolute inset-0" id="modal-backdrop"></div>
     <div id="ticket-modal-inner" class="relative w-full max-w-lg bg-[#111111] rounded-2xl border border-[#2a2a2a] shadow-2xl overflow-hidden">
 
-        <!-- Progress Bar -->
-        <div class="h-0.5 bg-gray-800">
-            <div id="modal-progress" class="progress-bar-fill" style="width: 33%"></div>
-        </div>
-
-        <!-- Modal Header -->
-        <div class="px-6 pt-6 pb-4 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div id="step-1-ind" class="step-indicator step-active">1</div>
-                <div class="w-8 h-px bg-gray-700"></div>
-                <div id="step-2-ind" class="step-indicator step-inactive">2</div>
-                <div class="w-8 h-px bg-gray-700"></div>
-                <div id="step-3-ind" class="step-indicator step-inactive">3</div>
-            </div>
+        <!-- Header: botão de fechar -->
+        <div class="px-6 pt-5 pb-1 flex justify-end">
             <button id="modal-close-btn" class="text-[#444444] hover:text-white transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -281,119 +269,9 @@ body { padding: 0 !important; }
             </button>
         </div>
 
-        <!-- Step 1: Category -->
-        <div id="step-1" class="px-6 pb-6">
-            <h3 class="text-white font-bold text-xl mb-1">Qual é o tipo do ticket?</h3>
-            <p class="text-[#888888] text-sm mb-6">Selecione a categoria que melhor descreve sua solicitação.</p>
-            <div class="grid grid-cols-2 gap-3">
-                <button class="category-card rounded-xl p-4 text-left" data-category="Bug">
-                    <div class="text-2xl mb-2">🐛</div>
-                    <div class="text-white font-semibold text-sm">Bug</div>
-                    <div class="text-[#444444] text-xs mt-1">Algo não está funcionando</div>
-                </button>
-                <button class="category-card rounded-xl p-4 text-left" data-category="Nova Funcionalidade">
-                    <div class="text-2xl mb-2">✨</div>
-                    <div class="text-white font-semibold text-sm">Nova Funcionalidade</div>
-                    <div class="text-[#444444] text-xs mt-1">Pedido de melhoria</div>
-                </button>
-                <button class="category-card rounded-xl p-4 text-left" data-category="Acesso ao Sistema">
-                    <div class="text-2xl mb-2">🔑</div>
-                    <div class="text-white font-semibold text-sm">Acesso ao Sistema</div>
-                    <div class="text-[#444444] text-xs mt-1">Permissões ou logins</div>
-                </button>
-                <button class="category-card rounded-xl p-4 text-left" data-category="Solicitação Geral">
-                    <div class="text-2xl mb-2">📋</div>
-                    <div class="text-white font-semibold text-sm">Solicitação Geral</div>
-                    <div class="text-[#444444] text-xs mt-1">Outras demandas</div>
-                </button>
-            </div>
-            <div class="mt-6 flex justify-end">
-                <button id="step-1-next" class="btn-primary" disabled style="opacity: 0.4">
-                    Próximo →
-                </button>
-            </div>
-        </div>
+        <!-- Formulário compartilhado (ticket-form.js) -->
+        <div id="tkf-portal-root" class="px-6 pb-6 pt-1"></div>
 
-        <!-- Step 2: Title -->
-        <div id="step-2" class="px-6 pb-6 hidden">
-            <h3 class="text-white font-bold text-xl mb-1">Qual é o título do ticket?</h3>
-            <p class="text-[#888888] text-sm mb-6">Em uma frase, descreva o que você precisa.</p>
-            <div class="mb-4">
-                <label class="block text-[#888888] text-sm mb-2">Empresa do grupo <span style="color:#e05260">*</span></label>
-                <select id="ticket-company" class="portal-input" style="cursor:pointer;">
-                    <option value="" disabled selected>Selecione a empresa…</option>
-                    <option value="Previnity">Previnity</option>
-                    <option value="TaxResearch">TaxResearch</option>
-                    <option value="OkCarro">OkCarro</option>
-                    <option value="Aplicari">Aplicari</option>
-                </select>
-            </div>
-            <div>
-                <input
-                    type="text"
-                    id="ticket-title"
-                    class="portal-input"
-                    placeholder="Ex: Não consigo acessar o sistema X"
-                    maxlength="255"
-                >
-                <p class="text-[#333333] text-xs mt-2">Seja específico — isso ajuda o time a entender mais rápido.</p>
-            </div>
-            <div class="mt-6 flex justify-between">
-                <button id="step-2-back" class="btn-secondary">← Voltar</button>
-                <button id="step-2-next" class="btn-primary" disabled style="opacity: 0.4">Próximo →</button>
-            </div>
-        </div>
-
-        <!-- Step 3: Description + Attachments -->
-        <div id="step-3" class="px-6 pb-6 hidden">
-            <h3 class="text-white font-bold text-xl mb-1">Mais detalhes <span class="text-[#444444] font-normal text-base">(opcional)</span></h3>
-            <p class="text-[#888888] text-sm mb-4">Explique o problema e anexe prints ou arquivos, se quiser.</p>
-            <div class="space-y-4">
-                <textarea
-                    id="ticket-description"
-                    class="portal-input resize-none"
-                    rows="4"
-                    placeholder="Descreva o que está acontecendo, passos para reproduzir, qual sistema é afetado..."
-                    maxlength="2000"
-                ></textarea>
-                <div>
-                    <p class="text-xs font-semibold text-[#444444] uppercase tracking-wider mb-2">Anexos (máx. 5 arquivos)</p>
-                    <div class="file-drop-zone" id="portal-file-drop" onclick="document.getElementById('portal-file-input').click()">
-                        <svg class="w-6 h-6 text-[#444444] mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
-                        </svg>
-                        <p class="text-xs text-[#555555]">Clique para anexar ou <kbd style="background:#2a2a2a;border:1px solid #404040;border-radius:4px;padding:1px 5px;font-size:11px;font-family:monospace;color:#888;">Ctrl+V</kbd> para colar um print</p>
-                    </div>
-                    <input type="file" id="portal-file-input" multiple accept="image/*,.pdf" style="display:none;" onchange="portalHandleFiles(this)">
-                    <div id="portal-file-list" class="mt-2 flex flex-col gap-1.5"></div>
-                </div>
-            </div>
-            <div class="mt-6 flex justify-between items-center">
-                <button id="step-3-back" class="btn-secondary">← Voltar</button>
-                <button id="step-3-submit" class="btn-primary flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-                    </svg>
-                    Enviar Ticket
-                </button>
-            </div>
-        </div>
-
-        <!-- Step 4: Success -->
-        <div id="step-success" class="px-6 pb-8 hidden text-center">
-            <div class="w-16 h-16 rounded-full bg-green-500/15 flex items-center justify-center mx-auto mb-4 mt-2">
-                <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
-                </svg>
-            </div>
-            <h3 class="text-white font-bold text-xl mb-2">Ticket enviado!</h3>
-            <p class="text-[#888888] text-sm mb-1">Seu ticket foi registrado com sucesso.</p>
-            <p class="text-[#444444] text-xs mb-6">Você será notificado por e-mail quando houver atualizações.</p>
-            <div class="flex gap-3 justify-center">
-                <button id="success-new" class="btn-secondary text-sm px-5 py-2.5">Abrir outro ticket</button>
-                <button id="success-close" class="btn-primary text-sm px-5 py-2.5">Ver meus tickets</button>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -515,6 +393,7 @@ body { padding: 0 !important; }
     </div>
 </div>
 
+<script src="<?php echo url('assets/js/ticket-form.js'); ?>"></script>
 <script src="<?php echo url('assets/js/portal.js'); ?>"></script>
 
 <?php include __DIR__ . '/../includes/footer.php'; ?>
