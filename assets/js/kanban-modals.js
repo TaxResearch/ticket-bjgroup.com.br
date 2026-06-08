@@ -193,17 +193,48 @@ function renderTicketAttachments(attachmentsJson) {
     const host = API_BASE_URL.replace(/\/api\/?$/, '');
     attachments.forEach(path => {
         const url = host + path;
-        const a = document.createElement('a');
-        a.href = url; a.target = '_blank'; a.rel = 'noopener';
         if (/\.(png|jpe?g|gif|webp|bmp)$/i.test(path)) {
-            a.innerHTML = `<img src="${url}" alt="anexo" style="width:96px;height:72px;object-fit:cover;border-radius:8px;border:1px solid #2a2a2a;cursor:pointer;">`;
+            // Imagem: abre num lightbox na própria tela (não em nova guia)
+            const img = document.createElement('img');
+            img.src = url;
+            img.alt = 'anexo';
+            img.title = 'Clique para ampliar';
+            img.style.cssText = 'width:96px;height:72px;object-fit:cover;border-radius:8px;border:1px solid #2a2a2a;cursor:zoom-in;';
+            img.addEventListener('click', () => openImageLightbox(url));
+            list.appendChild(img);
         } else {
+            // Demais arquivos (PDF etc.): link em nova guia
+            const a = document.createElement('a');
+            a.href = url; a.target = '_blank'; a.rel = 'noopener';
             a.style.cssText = 'display:flex;align-items:center;gap:8px;background:#141414;border:1px solid #2a2a2a;border-radius:8px;padding:8px 12px;text-decoration:none;color:#e0e0e0;font-size:13px;';
             a.innerHTML = `<svg style="width:16px;height:16px;flex-shrink:0;color:#888" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg><span style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${path.split('/').pop()}</span>`;
+            list.appendChild(a);
         }
-        list.appendChild(a);
     });
     block.classList.remove('hidden');
+}
+
+// Lightbox: abre a imagem do anexo sobre a tela atual (em vez de abrir em nova guia).
+function openImageLightbox(url) {
+    let overlay = document.getElementById('img-lightbox');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'img-lightbox';
+        overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;padding:32px;cursor:zoom-out;opacity:0;transition:opacity .15s;';
+        overlay.innerHTML = `
+            <button type="button" aria-label="Fechar" style="position:absolute;top:18px;right:24px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.12);border:none;color:#fff;font-size:20px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+            <img alt="anexo" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;box-shadow:0 12px 48px rgba(0,0,0,.5);cursor:default;">
+        `;
+        document.body.appendChild(overlay);
+        const close = () => { overlay.style.opacity = '0'; setTimeout(() => { overlay.style.display = 'none'; }, 150); };
+        // Clique fora da imagem (backdrop ou botão ✕) fecha; clique na imagem não.
+        overlay.addEventListener('click', (e) => { if (!e.target.closest('img')) close(); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && overlay.style.display === 'flex') close(); });
+    }
+    overlay.querySelector('img').src = url;
+    overlay.style.display = 'flex';
+    void overlay.offsetWidth;
+    overlay.style.opacity = '1';
 }
 
 // ─── Subtasks ────────────────────────────────────────────────────────────────
