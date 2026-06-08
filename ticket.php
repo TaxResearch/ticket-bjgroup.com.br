@@ -113,6 +113,16 @@ body { margin: 0; }
         <p class="t-sub">Descreva o problema com o máximo de detalhes.</p>
         <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:20px;">
             <div>
+                <label class="t-label">Empresa do grupo <span style="color:#e05260">*</span></label>
+                <select id="inp-company" class="t-input" required style="cursor:pointer;">
+                    <option value="" disabled selected>Selecione a empresa…</option>
+                    <option value="Previnity">Previnity</option>
+                    <option value="TaxResearch">TaxResearch</option>
+                    <option value="OkCarro">OkCarro</option>
+                    <option value="Aplicari">Aplicari</option>
+                </select>
+            </div>
+            <div>
                 <label class="t-label">Assunto (resumo em uma linha)</label>
                 <input type="text" id="inp-title" class="t-input" placeholder="Ex: Botão de salvar não responde" required>
             </div>
@@ -243,8 +253,10 @@ function selectCategory(el) {
 }
 
 function goToConfirm() {
+    const company = document.getElementById('inp-company').value;
     const title = document.getElementById('inp-title').value.trim();
     const desc = document.getElementById('inp-desc').value.trim();
+    if (!company) { document.getElementById('inp-company').focus(); return; }
     if (!title) { document.getElementById('inp-title').focus(); return; }
     if (!desc) { document.getElementById('inp-desc').focus(); return; }
     goToStep(3);
@@ -328,11 +340,13 @@ function renderFileList() {
 }
 
 async function submitTicket() {
+    const company = document.getElementById('inp-company').value;
     const title = document.getElementById('inp-title').value.trim();
     const desc = document.getElementById('inp-desc').value.trim();
     const name = document.getElementById('inp-name').value.trim();
     const email = document.getElementById('inp-email').value.trim();
 
+    if (!company) { goToStep(2); document.getElementById('inp-company').focus(); return; }
     if (!title || !desc) { goToStep(2); return; }
     if (!name) { document.getElementById('inp-name').focus(); return; }
     if (!email || !email.includes('@')) { document.getElementById('inp-email').focus(); return; }
@@ -344,6 +358,7 @@ async function submitTicket() {
     const fd = new FormData();
     fd.append('requesterName', name);
     fd.append('requesterEmail', email);
+    fd.append('requesterCompany', company);
     fd.append('category', selectedCategory);
     fd.append('title', title);
     fd.append('description', desc);
@@ -371,6 +386,7 @@ function resetForm() {
     document.getElementById('btn-step1').disabled = true;
     document.getElementById('inp-name').value = PREFILL_NAME || '';
     document.getElementById('inp-email').value = PREFILL_EMAIL || '';
+    document.getElementById('inp-company').value = '';
     document.getElementById('inp-title').value = '';
     document.getElementById('inp-desc').value = '';
     document.getElementById('file-list').innerHTML = '';

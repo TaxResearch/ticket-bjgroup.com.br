@@ -223,8 +223,9 @@ function createPersonalTaskCard(task) {
         div.style.borderLeftColor = borderColor;
 
         const badges = [];
-        if (task.requester?.company) {
-            badges.push(`<span class="text-[10px] px-2 py-0.5 bg-white/10 text-[#e0e0e0] rounded-full font-medium">${escapeHtml(task.requester.company)}</span>`);
+        const company = ticketCompany(task);
+        if (company) {
+            badges.push(`<span class="text-[10px] px-2 py-0.5 rounded-full font-semibold ${getCompanyStyle(company)}">${escapeHtml(company)}</span>`);
         }
         if (task.category) {
             badges.push(`<span class="text-[10px] px-2 py-0.5 rounded-full ${getCategoryStyle(task.category)}">${escapeHtml(task.category)}</span>`);
@@ -421,8 +422,24 @@ async function loadCollectiveTasks() {
     tasks.forEach(task => col.appendChild(createCollectiveTaskCard(task)));
 }
 
+// Empresa do ticket: solicitante público (requesterCompany) ou funcionário logado (requester.company).
+function ticketCompany(task) {
+    return task.requesterCompany || task.requester?.company || null;
+}
+
+// Cor distinta por empresa da holding — facilita identificar a origem do ticket no card.
+function getCompanyStyle(company) {
+    const styles = {
+        'Previnity':   'bg-sky-500/15 text-sky-300 border border-sky-500/30',
+        'TaxResearch': 'bg-violet-500/15 text-violet-300 border border-violet-500/30',
+        'OkCarro':     'bg-amber-500/15 text-amber-300 border border-amber-500/30',
+        'Aplicari':    'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30',
+    };
+    return styles[company] || 'bg-white/10 text-[#e0e0e0] border border-white/10';
+}
+
 function getTaskCompany(task) {
-    return task.requester?.company || task.board?.group?.name || null;
+    return ticketCompany(task) || task.board?.group?.name || null;
 }
 
 function renderCollectiveFilters(tasks) {
@@ -485,7 +502,7 @@ function createCollectiveTaskCard(task) {
 
     if (task.isTicket) {
         const badges = [];
-        if (task.requester?.company) badges.push(`<span class="text-[10px] px-2 py-0.5 bg-white/10 text-[#e0e0e0] rounded-full">${escapeHtml(task.requester.company)}</span>`);
+        { const c = ticketCompany(task); if (c) badges.push(`<span class="text-[10px] px-2 py-0.5 rounded-full font-semibold ${getCompanyStyle(c)}">${escapeHtml(c)}</span>`); }
         if (task.category) badges.push(`<span class="text-[10px] px-2 py-0.5 rounded-full ${getCategoryStyle(task.category)}">${escapeHtml(task.category)}</span>`);
         if (badges.length) html += `<div class="flex flex-wrap gap-1 mb-2">${badges.join('')}</div>`;
     }
@@ -559,7 +576,7 @@ async function loadHistory(query = '') {
             t.title.toLowerCase().includes(q) ||
             (t.assignedUser?.name || '').toLowerCase().includes(q) ||
             (t.category || '').toLowerCase().includes(q) ||
-            (t.requester?.company || '').toLowerCase().includes(q)
+            (ticketCompany(t) || '').toLowerCase().includes(q)
         )
         : historyData;
 
@@ -585,7 +602,7 @@ function createHistoryCard(task) {
         : '?';
 
     const badges = [];
-    if (task.requester?.company) badges.push(`<span class="text-[10px] px-2 py-0.5 bg-white/10 text-[#e0e0e0] rounded-full">${escapeHtml(task.requester.company)}</span>`);
+    { const c = ticketCompany(task); if (c) badges.push(`<span class="text-[10px] px-2 py-0.5 rounded-full font-semibold ${getCompanyStyle(c)}">${escapeHtml(c)}</span>`); }
     if (task.category) badges.push(`<span class="text-[10px] px-2 py-0.5 bg-white/5 text-[#888888] rounded-full">${escapeHtml(task.category)}</span>`);
 
     div.innerHTML = `

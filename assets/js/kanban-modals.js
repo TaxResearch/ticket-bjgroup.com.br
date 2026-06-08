@@ -111,7 +111,7 @@ function openTaskModal(task = null, status = 'TODO') {
                 document.getElementById('ticket-requester-name').textContent =
                     task.requesterName || task.requester?.name || '-';
                 document.getElementById('ticket-requester-company').textContent =
-                    task.requester?.company || '-';
+                    task.requesterCompany || task.requester?.company || '-';
                 document.getElementById('ticket-category-display').textContent =
                     task.category || '-';
 
