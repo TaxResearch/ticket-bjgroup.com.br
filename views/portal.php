@@ -318,6 +318,16 @@ body { padding: 0 !important; }
         <div id="step-2" class="px-6 pb-6 hidden">
             <h3 class="text-white font-bold text-xl mb-1">Qual é o título do ticket?</h3>
             <p class="text-[#888888] text-sm mb-6">Em uma frase, descreva o que você precisa.</p>
+            <div class="mb-4">
+                <label class="block text-[#888888] text-sm mb-2">Empresa do grupo <span style="color:#e05260">*</span></label>
+                <select id="ticket-company" class="portal-input" style="cursor:pointer;">
+                    <option value="" disabled selected>Selecione a empresa…</option>
+                    <option value="Previnity">Previnity</option>
+                    <option value="TaxResearch">TaxResearch</option>
+                    <option value="OkCarro">OkCarro</option>
+                    <option value="Aplicari">Aplicari</option>
+                </select>
+            </div>
             <div>
                 <input
                     type="text"

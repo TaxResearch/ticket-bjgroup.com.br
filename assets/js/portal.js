@@ -25,6 +25,11 @@ document.addEventListener('DOMContentLoaded', async function () {
                 user.company ? `${user.name} · ${user.company}` : user.name;
             document.getElementById('portal-user-name').classList.remove('hidden');
             document.getElementById('portal-avatar-letter').textContent = letter;
+            // Pré-seleciona a empresa do funcionário (editável — pode abrir p/ outra empresa do grupo)
+            const companySel = document.getElementById('ticket-company');
+            if (companySel && user.company && [...companySel.options].some(o => o.value === user.company)) {
+                companySel.value = user.company;
+            }
         }
     } catch (e) {
         console.error('Erro ao carregar usuário:', e);
@@ -99,13 +104,9 @@ document.addEventListener('DOMContentLoaded', async function () {
         goToStep(1);
     });
 
-    // Título - habilitar next quando não vazio
-    document.getElementById('ticket-title').addEventListener('input', function () {
-        const btn = document.getElementById('step-2-next');
-        const hasValue = this.value.trim().length > 0;
-        btn.disabled = !hasValue;
-        btn.style.opacity = hasValue ? '1' : '0.4';
-    });
+    // Step 2 - habilitar "Próximo" quando empresa selecionada E título preenchido
+    document.getElementById('ticket-title').addEventListener('input', updateStep2Next);
+    document.getElementById('ticket-company').addEventListener('change', updateStep2Next);
 
     // Keyboard: Enter avança etapa
     document.getElementById('ticket-title').addEventListener('keydown', function (e) {
@@ -156,12 +157,23 @@ function closeTicketModal() {
     document.body.style.overflow = '';
 }
 
+function updateStep2Next() {
+    const title = document.getElementById('ticket-title').value.trim();
+    const company = document.getElementById('ticket-company').value;
+    const btn = document.getElementById('step-2-next');
+    const ok = title.length > 0 && !!company;
+    btn.disabled = !ok;
+    btn.style.opacity = ok ? '1' : '0.4';
+}
+
 function resetModal() {
     selectedCategory = null;
     portalSelectedFiles = [];
     document.querySelectorAll('.category-card').forEach(c => c.classList.remove('selected'));
     document.getElementById('ticket-title').value = '';
     document.getElementById('ticket-description').value = '';
+    const companySel = document.getElementById('ticket-company');
+    if (companySel) companySel.value = (currentUserData && [...companySel.options].some(o => o.value === currentUserData.company)) ? currentUserData.company : '';
     document.getElementById('portal-file-list').innerHTML = '';
     document.getElementById('portal-file-drop').style.display = '';
     const btn1 = document.getElementById('step-1-next');
@@ -257,8 +269,10 @@ function goToStep(step) {
 async function submitTicket() {
     const title = document.getElementById('ticket-title').value.trim();
     const description = document.getElementById('ticket-description').value.trim();
+    const company = document.getElementById('ticket-company').value;
 
     if (!title || !selectedCategory) return;
+    if (!company) { goToStep(2); return; }
 
     const submitBtn = document.getElementById('step-3-submit');
     submitBtn.disabled = true;
@@ -268,6 +282,7 @@ async function submitTicket() {
         const fd = new FormData();
         fd.append('title', title);
         fd.append('category', selectedCategory);
+        fd.append('requesterCompany', company);
         if (description) fd.append('description', description);
         portalSelectedFiles.forEach(f => fd.append('attachments', f));
 
