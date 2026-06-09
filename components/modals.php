@@ -114,8 +114,7 @@
                     </label>
 
                     <!-- atalhos rápidos -->
-                    <div class="grid grid-cols-6 gap-1.5 mb-2">
-                        <button type="button" class="prazo-chip" data-prazo-val="1" data-prazo-unit="hours">1h</button>
+                    <div class="grid grid-cols-5 gap-1.5 mb-2">
                         <button type="button" class="prazo-chip" data-prazo-val="4" data-prazo-unit="hours">4h</button>
                         <button type="button" class="prazo-chip" data-prazo-val="8" data-prazo-unit="hours">8h</button>
                         <button type="button" class="prazo-chip" data-prazo-val="1" data-prazo-unit="days">1 dia</button>
@@ -124,6 +123,11 @@
                     </div>
 
                     <div class="flex gap-3 items-center justify-center">
+                        <!-- entrega prevista -->
+                        <div class="flex items-center gap-1.5 text-[12px] pr-1">
+                            <svg class="w-3.5 h-3.5 text-[#666666] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            <span id="task-prazo-hint" class="prazo-hint-empty whitespace-nowrap">Sem prazo definido</span>
+                        </div>
                         <!-- stepper custom -->
                         <div class="prazo-stepper">
                             <button type="button" id="task-prazo-minus" class="prazo-step-btn" tabindex="-1" aria-label="Diminuir">&minus;</button>
@@ -135,11 +139,6 @@
                             <option value="days">Dias</option>
                             <option value="weeks">Semanas</option>
                         </select>
-                        <!-- entrega prevista (logo ao lado, sem buraco) -->
-                        <div class="flex items-center gap-1.5 text-[12px] pl-1">
-                            <svg class="w-3.5 h-3.5 text-[#666666] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                            <span id="task-prazo-hint" class="prazo-hint-empty whitespace-nowrap">Sem prazo definido</span>
-                        </div>
                     </div>
                 </div>
 
