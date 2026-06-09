@@ -1,13 +1,20 @@
 <div id="task-modal" class="modal fixed inset-0 flex items-center justify-center z-40 hidden">
     <div class="modal-backdrop absolute inset-0 bg-black/60"></div>
-    <div class="modal-content relative p-6 rounded-xl w-full max-w-lg mx-4 bg-[#141414] border border-[#2a2a2a] shadow-2xl max-h-[90vh] overflow-y-auto">
-        <div class="flex items-center justify-between mb-4">
-            <h3 id="modal-title" class="text-xl font-semibold text-white">Nova Tarefa</h3>
-            <span id="modal-category-badge" class="hidden text-xs font-medium px-2.5 py-1 rounded-full bg-[#2a2a2a] border border-[#404040] text-[#cccccc]"></span>
+    <div class="modal-content relative p-7 rounded-2xl w-full max-w-2xl mx-4 bg-[#141414] border border-[#2a2a2a] shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div class="flex items-start justify-between mb-5">
+            <div class="flex items-center gap-3 min-w-0">
+                <h3 id="modal-title" class="text-xl font-semibold text-white truncate">Nova Tarefa</h3>
+                <span id="modal-category-badge" class="hidden text-xs font-medium px-2.5 py-1 rounded-full bg-[#2a2a2a] border border-[#404040] text-[#cccccc] shrink-0"></span>
+            </div>
+            <button type="button" id="modal-close-x" class="text-[#555555] hover:text-white transition-colors shrink-0 -mt-0.5" aria-label="Fechar">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
         </div>
 
         <!-- Abas internas do modal -->
-        <div class="flex gap-0 mb-5 border-b border-[#2a2a2a]">
+        <div class="flex gap-0 mb-6 border-b border-[#2a2a2a]">
             <button type="button" id="modal-tab-principal" class="modal-inner-tab modal-inner-tab-active px-4 py-2 text-sm font-medium">Principal</button>
             <button type="button" id="modal-tab-detalhes" class="modal-inner-tab px-4 py-2 text-sm font-medium">Detalhes</button>
             <button type="button" id="modal-tab-atribuicao" class="modal-inner-tab px-4 py-2 text-sm font-medium">Atribuição</button>
@@ -26,11 +33,11 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     <div class="md:col-span-2">
                         <label for="task-title" class="block text-xs font-medium text-[#888888] mb-1">Título</label>
-                        <input type="text" id="task-title" name="title" class="w-full bg-[#1c1c1c] border border-[#2a2a2a] rounded p-2 text-white focus:border-white focus:outline-none" required maxlength="255">
+                        <input type="text" id="task-title" name="title" class="w-full bg-[#1c1c1c] border border-[#2a2a2a] rounded-lg p-2.5 text-white focus:border-white focus:outline-none" required maxlength="255">
                     </div>
                     <div>
                         <label for="task-status" class="block text-xs font-medium text-[#888888] mb-1">Status</label>
-                        <select id="task-status" name="status" class="w-full bg-[#1c1c1c] border border-[#2a2a2a] rounded p-2 text-white focus:border-white focus:outline-none">
+                        <select id="task-status" name="status" class="w-full bg-[#1c1c1c] border border-[#2a2a2a] rounded-lg p-2.5 text-white focus:border-white focus:outline-none">
                             <option value="TODO">A Fazer</option>
                             <option value="DOING">Em Progresso</option>
                             <option value="DONE">Concluído</option>
@@ -50,7 +57,7 @@
 
                 <div class="mb-4">
                     <label for="task-description" class="block text-xs font-medium text-[#888888] mb-1">Descrição</label>
-                    <textarea id="task-description" name="description" rows="5" class="w-full bg-[#1c1c1c] border border-[#2a2a2a] rounded p-2 text-white focus:border-white focus:outline-none resize-none" maxlength="2000"></textarea>
+                    <textarea id="task-description" name="description" rows="5" class="w-full bg-[#1c1c1c] border border-[#2a2a2a] rounded-lg p-2.5 text-white focus:border-white focus:outline-none resize-none" maxlength="2000"></textarea>
                 </div>
 
                 <!-- Subtasks — apenas para DEV -->
@@ -79,7 +86,7 @@
                 <div class="grid grid-cols-2 gap-4 mb-4">
                     <div>
                         <label for="task-priority" class="block text-xs font-medium text-[#888888] mb-1">Prioridade</label>
-                        <select id="task-priority" name="priority" class="w-full bg-[#1c1c1c] border border-[#2a2a2a] rounded p-2 text-white focus:border-white focus:outline-none">
+                        <select id="task-priority" name="priority" class="w-full bg-[#1c1c1c] border border-[#2a2a2a] rounded-lg p-2.5 text-white focus:border-white focus:outline-none">
                             <option value="LOW">🟢 Baixa</option>
                             <option value="MEDIUM" selected>🟡 Média</option>
                             <option value="HIGH">🟠 Alta</option>
@@ -87,34 +94,48 @@
                         </select>
                     </div>
                     <div>
-                        <label for="task-prazo-valor" class="block text-xs font-medium text-[#888888] mb-1">Prazo de Entrega</label>
+                        <label for="task-prazo-valor" class="block text-xs font-medium text-[#888888] mb-1.5">Prazo de Entrega</label>
+
+                        <!-- atalhos rápidos -->
+                        <div class="flex flex-wrap gap-1.5 mb-2">
+                            <button type="button" class="prazo-chip" data-prazo-val="1" data-prazo-unit="hours">1h</button>
+                            <button type="button" class="prazo-chip" data-prazo-val="4" data-prazo-unit="hours">4h</button>
+                            <button type="button" class="prazo-chip" data-prazo-val="1" data-prazo-unit="days">1 dia</button>
+                            <button type="button" class="prazo-chip" data-prazo-val="1" data-prazo-unit="weeks">1 sem</button>
+                        </div>
+
                         <div class="flex gap-2">
-                            <input type="number" id="task-prazo-valor" name="prazoValor" placeholder="Ex: 4" min="0" step="1" class="w-16 bg-[#1c1c1c] border border-[#2a2a2a] rounded p-2 text-white focus:border-white focus:outline-none">
-                            <select id="task-prazo-unidade" name="prazoUnidade" class="flex-1 bg-[#1c1c1c] border border-[#2a2a2a] rounded p-2 text-white focus:border-white focus:outline-none">
+                            <!-- stepper custom -->
+                            <div class="prazo-stepper">
+                                <button type="button" id="task-prazo-minus" class="prazo-step-btn" tabindex="-1" aria-label="Diminuir">&minus;</button>
+                                <input type="number" id="task-prazo-valor" name="prazoValor" placeholder="0" min="0" step="1" class="prazo-step-input">
+                                <button type="button" id="task-prazo-plus" class="prazo-step-btn" tabindex="-1" aria-label="Aumentar">+</button>
+                            </div>
+                            <select id="task-prazo-unidade" name="prazoUnidade" class="flex-1 bg-[#1c1c1c] border border-[#2a2a2a] rounded-lg p-2.5 text-white focus:border-white focus:outline-none">
                                 <option value="hours">Horas</option>
                                 <option value="days">Dias</option>
                                 <option value="weeks">Semanas</option>
                             </select>
                         </div>
-                        <p id="task-prazo-hint" class="text-[11px] text-[#666666] mt-1 leading-tight min-h-[14px]"></p>
+                        <p id="task-prazo-hint" class="text-[11px] text-[#666666] mt-1.5 leading-tight min-h-[14px]"></p>
                     </div>
                 </div>
 
                 <div class="mb-4">
                     <label for="task-tags" class="block text-xs font-medium text-[#888888] mb-1">Tags (separadas por vírgula)</label>
-                    <input type="text" id="task-tags" name="tags" placeholder="empresa, categoria, solicitante" class="w-full bg-[#1c1c1c] border border-[#2a2a2a] rounded p-2 text-white focus:border-white focus:outline-none">
+                    <input type="text" id="task-tags" name="tags" placeholder="empresa, categoria, solicitante" class="w-full bg-[#1c1c1c] border border-[#2a2a2a] rounded-lg p-2.5 text-white focus:border-white focus:outline-none">
                     <p class="text-[11px] text-[#555555] mt-1 leading-tight">Geradas automaticamente a partir do ticket (empresa, categoria, solicitante). Você pode editar.</p>
                 </div>
 
                 <!-- Requer Validação -->
-                <div class="flex items-center justify-between p-3 bg-[#1c1c1c] rounded-lg border border-[#2a2a2a]">
+                <div class="flex items-center justify-between p-4 bg-[#1c1c1c] rounded-xl border border-[#2a2a2a] hover:border-[#404040] transition-colors">
                     <div>
                         <span class="text-sm font-medium text-white">Requer Validação</span>
                         <p class="text-xs text-[#555555] mt-0.5">Impede concluir sem validação de outro membro</p>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
                         <input type="checkbox" id="task-requires-validation" class="sr-only peer">
-                        <div class="w-9 h-5 bg-[#2a2a2a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[#404040] after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-600"></div>
+                        <div class="w-11 h-6 bg-[#2a2a2a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[#404040] after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-600"></div>
                     </label>
                 </div>
 
@@ -202,10 +223,15 @@
 
             </div><!-- /modal-panel-mensagens -->
 
-            <div class="flex justify-end gap-3 pt-4 mt-4 border-t border-[#2a2a2a]">
-                <button type="button" id="modal-cancel" class="px-4 py-2 text-[#888888] hover:text-white transition-colors">Cancelar</button>
-                <button type="button" id="modal-delete" class="bg-red-900/40 hover:bg-red-800/60 text-red-300 py-2 px-4 rounded border border-red-900/50 hidden transition-colors">Excluir</button>
-                <button type="submit" id="modal-save" class="bg-white hover:bg-[#e0e0e0] text-black font-semibold py-2 px-6 rounded transition-colors">Salvar Tarefa</button>
+            <div class="flex justify-end gap-3 pt-4 mt-5 border-t border-[#2a2a2a]">
+                <button type="button" id="modal-cancel" class="px-4 py-2.5 text-[#888888] hover:text-white hover:bg-white/5 rounded-lg transition-colors">Cancelar</button>
+                <button type="button" id="modal-delete" class="bg-red-900/40 hover:bg-red-800/60 text-red-300 py-2.5 px-4 rounded-lg border border-red-900/50 hidden transition-colors">Excluir</button>
+                <button type="submit" id="modal-save" class="bg-white hover:bg-[#e0e0e0] text-black font-semibold py-2.5 px-6 rounded-lg transition-colors flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Salvar Tarefa
+                </button>
             </div>
         </form>
     </div>

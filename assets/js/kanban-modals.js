@@ -37,13 +37,45 @@ function updatePrazoHint() {
     hint.textContent = '→ Entrega prevista: ' + data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
+// Incrementa/decrementa o valor do prazo (mínimo 0) e ressincroniza a UI.
+function stepPrazo(delta) {
+    const el = document.getElementById('task-prazo-valor');
+    if (!el) return;
+    const cur = parseInt(el.value, 10) || 0;
+    el.value = Math.max(0, cur + delta);
+    updatePrazoHint();
+    highlightPrazoPreset();
+}
+
+// Destaca o chip de atalho que corresponde ao valor+unidade atuais.
+function highlightPrazoPreset() {
+    const v = parseInt(document.getElementById('task-prazo-valor')?.value, 10) || 0;
+    const u = document.getElementById('task-prazo-unidade')?.value;
+    document.querySelectorAll('.prazo-chip').forEach(chip => {
+        const match = parseInt(chip.dataset.prazoVal, 10) === v && chip.dataset.prazoUnit === u;
+        chip.classList.toggle('prazo-chip-active', match);
+    });
+}
+
 // Delegação no document: os inputs vivem dentro do form, que é clonado ao
 // carregar (perde listeners diretos), então escutamos no nível do documento.
 document.addEventListener('input', (e) => {
-    if (e.target.id === 'task-prazo-valor') updatePrazoHint();
+    if (e.target.id === 'task-prazo-valor') { updatePrazoHint(); highlightPrazoPreset(); }
 });
 document.addEventListener('change', (e) => {
-    if (e.target.id === 'task-prazo-unidade') updatePrazoHint();
+    if (e.target.id === 'task-prazo-unidade') { updatePrazoHint(); highlightPrazoPreset(); }
+});
+document.addEventListener('click', (e) => {
+    if (e.target.id === 'task-prazo-minus') { e.preventDefault(); stepPrazo(-1); return; }
+    if (e.target.id === 'task-prazo-plus')  { e.preventDefault(); stepPrazo(1);  return; }
+    const chip = e.target.closest?.('.prazo-chip');
+    if (chip) {
+        e.preventDefault();
+        document.getElementById('task-prazo-valor').value   = chip.dataset.prazoVal;
+        document.getElementById('task-prazo-unidade').value = chip.dataset.prazoUnit;
+        updatePrazoHint();
+        highlightPrazoPreset();
+    }
 });
 
 function resetModalTabs() {
@@ -143,6 +175,7 @@ function openTaskModal(task = null, status = 'TODO') {
                 updatePrazoHint();
             }
         }
+        highlightPrazoPreset();
 
         const tagsEl = document.getElementById('task-tags');
         if (tagsEl && task.tags) tagsEl.value = task.tags;
@@ -212,6 +245,7 @@ function openTaskModal(task = null, status = 'TODO') {
         // form.reset() já limpa valor/unidade; só falta a dica de entrega.
         const prazoHint = document.getElementById('task-prazo-hint');
         if (prazoHint) prazoHint.textContent = '';
+        highlightPrazoPreset();
 
         const ticketSection = document.getElementById('ticket-info-section');
         if (ticketSection) ticketSection.classList.add('hidden');
@@ -522,6 +556,7 @@ function closeTaskModal() {
 }
 
 document.getElementById('modal-cancel')?.addEventListener('click', closeTaskModal);
+document.getElementById('modal-close-x')?.addEventListener('click', closeTaskModal);
 
 document.getElementById('task-modal')?.addEventListener('click', function (e) {
     if (e.target === this || e.target.classList.contains('modal-backdrop')) closeTaskModal();

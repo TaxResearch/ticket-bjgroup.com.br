@@ -138,6 +138,58 @@ select.modal-select option {
     background-color: #404040;
 }
 
+/* Prazo de Entrega — stepper custom + chips */
+.prazo-stepper {
+    display: inline-flex;
+    align-items: stretch;
+    background: #1c1c1c;
+    border: 1px solid #2a2a2a;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    transition: border-color .15s, box-shadow .15s;
+}
+.prazo-stepper:focus-within {
+    border-color: #ffffff;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, .08);
+}
+.prazo-step-btn {
+    width: 2.25rem;
+    color: #888888;
+    font-size: 1.15rem;
+    line-height: 1;
+    background: transparent;
+    user-select: none;
+    transition: background-color .15s, color .15s;
+}
+.prazo-step-btn:hover  { background: #2a2a2a; color: #fff; }
+.prazo-step-btn:active { background: #333; }
+.prazo-step-input {
+    width: 3.25rem;
+    text-align: center;
+    background: transparent;
+    border: none;
+    color: #fff;
+    outline: none;
+    padding: .5rem 0;
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+/* esconde as setas nativas feias */
+.prazo-step-input::-webkit-outer-spin-button,
+.prazo-step-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+.prazo-chip {
+    padding: .25rem .6rem;
+    font-size: .72rem;
+    border-radius: 9999px;
+    background: #1c1c1c;
+    border: 1px solid #2a2a2a;
+    color: #888888;
+    transition: all .15s;
+}
+.prazo-chip:hover { border-color: #404040; color: #fff; }
+.prazo-chip-active { background: #fff; color: #000; border-color: #fff; }
+
 .column-header {
     color: #ffffff;
     letter-spacing: 0.5px;
