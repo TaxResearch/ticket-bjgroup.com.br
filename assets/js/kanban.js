@@ -18,6 +18,20 @@ let allBoards = [];
 let draggedTaskElement = null;
 let historyData = null; // cache do histórico, null = não carregado
 
+// Time de dev (atribuíveis/validadores). Carregado uma vez no boot.
+let DEV_TEAM = [];
+async function loadDevTeamCache() {
+    try {
+        const list = await DevDeck.fetchApiSilent('/user/dev-team');
+        if (Array.isArray(list)) { DEV_TEAM = list; window.DEV_TEAM = list; }
+    } catch (_) { /* endpoint indisponível: degrada sem erro */ }
+}
+function devName(id) {
+    const u = (window.DEV_TEAM || DEV_TEAM).find(d => String(d.id) === String(id));
+    return u ? u.name : null;
+}
+window.devName = devName;
+
 document.addEventListener('DOMContentLoaded', async function () {
     try {
         const token = DevDeck.getAuthToken();
@@ -34,6 +48,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // Carregar boards pessoais em background (para criação de tasks)
         loadPersonalBoards();
+        loadDevTeamCache();
 
         // Módulos extras
         if (typeof loadUserSettings === 'function') await loadUserSettings();
@@ -96,7 +111,22 @@ function setupGlobalClicks() {
 async function loadPersonalBoards() {
     if (typeof currentGroupId !== 'undefined') currentGroupId = null;
 
-    const boards = await DevDeck.fetchApi('/boards?groupId=personal');
+    let boards = await DevDeck.fetchApi('/boards?groupId=personal');
+
+    // Self-heal: dev sem nenhum board pessoal (ex.: criado direto no banco) não
+    // consegue criar tarefa ("Nenhum quadro disponível"). Cria um padrão na hora.
+    if (!boards || boards.length === 0) {
+        try {
+            await DevDeck.fetchApi('/boards', {
+                method: 'POST',
+                body: JSON.stringify({ name: 'Meu Kanban' })
+            });
+            boards = await DevDeck.fetchApi('/boards?groupId=personal');
+        } catch (e) {
+            console.error('Falha ao criar board pessoal padrão:', e);
+        }
+    }
+
     allBoards = boards || [];
     currentBoardIsGroup = false;
 
@@ -213,6 +243,7 @@ function createPersonalTaskCard(task) {
     div.dataset.taskId = task.id;
     div.dataset.priority = task.priority || 'MEDIUM';
     div.dataset.requiresValidation = task.requiresValidation ? 'true' : 'false';
+    div.dataset.validatorUserId = task.validatorUserId || '';
     div.draggable = true;
 
     let innerHTML = '';
@@ -325,9 +356,11 @@ function createPersonalTaskCard(task) {
     }
 
     if (task.requiresValidation) {
+        const vName = devName(task.validatorUserId);
+        const vLabel = vName ? `⚠ Valida: ${escapeHtml(vName)}` : '⚠ Requer Validação';
         innerHTML += `<div class="mt-2">
             <span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border" style="background:rgba(176,120,0,0.1);color:#b07800;border-color:rgba(176,120,0,0.3)">
-                ⚠ Requer Validação
+                ${vLabel}
             </span>
         </div>`;
     }
@@ -340,6 +373,15 @@ function createPersonalTaskCard(task) {
     return div;
 }
 
+// Pode concluir (mover para a zona de conclusão)? Sim quando não requer validação,
+// ou quando requer e o usuário atual é exatamente o validador designado.
+function canCurrentUserComplete(el) {
+    if (el.dataset.requiresValidation !== 'true') return true;
+    const me = DevDeck.getUserData();
+    const validator = el.dataset.validatorUserId;
+    return !!validator && String(me?.id) === String(validator);
+}
+
 function setupPersonalDragAndDrop() {
     ['personal-todo-tasks', 'personal-doing-tasks', 'personal-validating-tasks'].forEach(colId => {
         const col = document.getElementById(colId);
@@ -350,7 +392,8 @@ function setupPersonalDragAndDrop() {
             if (!draggedTaskElement) return;
             const status = colId === 'personal-todo-tasks' ? 'TODO' : 'DOING';
             col.appendChild(draggedTaskElement);
-            draggedTaskElement.dataset.requiresValidation = 'false'; // mover de volta desbloqueia
+            // NÃO mexer em requiresValidation aqui — mover de volta não pode
+            // "desbloquear" a validação (era a brecha que deixava concluir sem validar).
             await DevDeck.fetchApi(`/tasks/${draggedTaskElement.dataset.taskId}`, {
                 method: 'PATCH',
                 body: JSON.stringify({ status })
@@ -363,7 +406,7 @@ function setupPersonalDragAndDrop() {
 
     zone.ondragover = e => {
         e.preventDefault();
-        if (draggedTaskElement?.dataset.requiresValidation === 'true') {
+        if (draggedTaskElement && !canCurrentUserComplete(draggedTaskElement)) {
             zone.classList.add('completion-zone-blocked');
         } else {
             zone.classList.add('completion-zone-hover');
@@ -379,8 +422,12 @@ function setupPersonalDragAndDrop() {
         zone.classList.remove('completion-zone-hover', 'completion-zone-blocked');
         if (!draggedTaskElement) return;
 
-        if (draggedTaskElement.dataset.requiresValidation === 'true') {
-            alert('Este ticket requer validação antes de ser concluído.\nAbra o ticket e desmarque "Requer Validação" para poder concluir.');
+        if (!canCurrentUserComplete(draggedTaskElement)) {
+            const validator = draggedTaskElement.dataset.validatorUserId;
+            const vName = validator ? devName(validator) : null;
+            alert(vName
+                ? `Este ticket requer validação de ${vName}. Só essa pessoa pode concluí-lo.`
+                : 'Este ticket requer validação antes de concluir. Defina o validador na aba "Detalhes" — só ele pode concluir.');
             return;
         }
 
@@ -511,6 +558,20 @@ function createCollectiveTaskCard(task) {
 
     if (task.description) {
         html += `<p class="text-xs text-[#888888] mb-3 line-clamp-2">${escapeHtml(task.description)}</p>`;
+    }
+
+    // Tags livres (joao, jair...) — empresa/categoria já viram badge acima, então
+    // não repetimos elas nem a tag técnica "ticket".
+    if (task.tags) {
+        const hidden = new Set(
+            [ticketCompany(task), task.category, 'ticket', 'alta', 'urgente']
+                .filter(Boolean).map(s => String(s).toLowerCase())
+        );
+        const extra = task.tags.split(',').map(t => t.trim())
+            .filter(t => t && !hidden.has(t.toLowerCase()));
+        if (extra.length) {
+            html += `<div class="flex flex-wrap gap-1 mb-2">${extra.map(t => `<span class="text-[10px] px-1.5 py-0.5 bg-white/5 text-[#888888] rounded">${escapeHtml(t)}</span>`).join('')}</div>`;
+        }
     }
 
     const priorityColors = { URGENT: '#7a1e1e', HIGH: '#5a3a00', MEDIUM: '#2a2a2a', LOW: '#1e3a2a' };

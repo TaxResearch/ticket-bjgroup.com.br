@@ -60,6 +60,12 @@
                     </div>
                 </div>
 
+                <!-- Quadro destino (só ao criar): pessoal ou Kanban Coletivo -->
+                <div id="task-board-row" class="hidden mb-4">
+                    <label for="task-board-select" class="block text-xs font-medium text-[#888888] mb-1">Onde criar</label>
+                    <select id="task-board-select" class="w-full bg-[#1c1c1c] border border-[#2a2a2a] rounded-lg p-2.5 text-white focus:border-white focus:outline-none"></select>
+                </div>
+
                 <!-- Aviso: tarefa pessoal só visível para o criador -->
                 <div id="personal-task-warning" class="hidden mb-4 flex items-start gap-2.5 bg-amber-950/40 border border-amber-800/40 rounded-lg px-3.5 py-3">
                     <svg class="w-4 h-4 text-amber-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -165,6 +171,15 @@
                         <input type="checkbox" id="task-requires-validation" class="sr-only peer">
                         <div class="w-11 h-6 bg-[#2a2a2a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[#404040] after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-600"></div>
                     </label>
+                </div>
+
+                <!-- Quem valida (revelado quando "Requer validação" está ligado) -->
+                <div id="task-validator-row" class="hidden mt-3">
+                    <label for="task-validator" class="block text-xs font-medium text-[#888888] mb-1.5">Quem valida</label>
+                    <select id="task-validator" class="w-full bg-[#1c1c1c] border border-[#2a2a2a] rounded-lg p-2.5 text-white text-sm focus:border-white focus:outline-none">
+                        <option value="">Selecione o validador…</option>
+                    </select>
+                    <p class="text-[11px] text-[#555555] mt-1.5 leading-tight">Só essa pessoa poderá concluir o ticket.</p>
                 </div>
 
             </div><!-- /modal-panel-detalhes -->

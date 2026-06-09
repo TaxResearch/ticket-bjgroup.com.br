@@ -160,6 +160,79 @@ function switchModalTab(name) {
     }
 }
 
+// ─── Validador & Quadro destino ────────────────────────────────────────────────
+
+// Time de dev: preenchido no boot pelo kanban.js (window.DEV_TEAM).
+function getDevTeamList() {
+    return Array.isArray(window.DEV_TEAM) ? window.DEV_TEAM : [];
+}
+
+async function fillValidatorSelect(selectedId) {
+    let devs = getDevTeamList();
+    if (!devs.length) {
+        try {
+            const list = await DevDeck.fetchApiSilent('/user/dev-team');
+            if (Array.isArray(list)) { window.DEV_TEAM = list; devs = list; }
+        } catch (_) { /* endpoint indisponível: dropdown fica só com o placeholder */ }
+    }
+    const sel = document.getElementById('task-validator');
+    if (!sel) return;
+    sel.innerHTML = '<option value="">Selecione o validador…</option>';
+    devs.forEach(u => {
+        const o = document.createElement('option');
+        o.value = u.id;
+        o.textContent = `${u.name} (${u.email})`;
+        sel.appendChild(o);
+    });
+    sel.value = selectedId ? String(selectedId) : '';
+}
+
+function toggleValidatorRow(show) {
+    const row = document.getElementById('task-validator-row');
+    if (row) row.classList.toggle('hidden', !show);
+}
+
+// Seletor de quadro (só ao criar): boards pessoais + Kanban Coletivo (board principal).
+async function fillBoardSelect() {
+    const sel = document.getElementById('task-board-select');
+    if (!sel) return;
+    sel.innerHTML = '';
+    const personal = (typeof allBoards !== 'undefined' && Array.isArray(allBoards)) ? allBoards : [];
+    personal.forEach(b => {
+        const o = document.createElement('option');
+        o.value = b.id;
+        o.textContent = `${b.name} (pessoal)`;
+        sel.appendChild(o);
+    });
+    try {
+        const main = await DevDeck.fetchApiSilent('/boards/public-main');
+        if (main && main.id) {
+            const o = document.createElement('option');
+            o.value = main.id;
+            o.dataset.collective = 'true';
+            o.textContent = 'Kanban Coletivo (todos os devs)';
+            sel.appendChild(o);
+        }
+    } catch (_) { /* sem board principal configurado: só pessoais */ }
+    if (personal.length) sel.value = String(personal[0].id);
+    updateBoardWarning();
+}
+
+// Mostra o aviso de "tarefa pessoal" só quando um board pessoal está selecionado.
+function updateBoardWarning() {
+    const warn = document.getElementById('personal-task-warning');
+    const sel = document.getElementById('task-board-select');
+    if (!warn || !sel) return;
+    const opt = sel.options[sel.selectedIndex];
+    warn.classList.toggle('hidden', opt?.dataset?.collective === 'true');
+}
+
+// Form é clonado ao carregar (perde listeners diretos) → delegação no documento.
+document.addEventListener('change', (e) => {
+    if (e.target.id === 'task-requires-validation') toggleValidatorRow(e.target.checked);
+    if (e.target.id === 'task-board-select') updateBoardWarning();
+});
+
 function openTaskModal(task = null, status = 'TODO') {
     const modal = document.getElementById('task-modal');
     const form = document.getElementById('task-form');
@@ -315,6 +388,14 @@ function openTaskModal(task = null, status = 'TODO') {
         const tabMensagens = document.getElementById('modal-tab-mensagens');
         if (tabMensagens) tabMensagens.classList.add('hidden');
     }
+
+    // Quadro destino (só ao criar) + validador (aba Detalhes)
+    const isNewTask = !task;
+    const boardRow = document.getElementById('task-board-row');
+    if (boardRow) boardRow.classList.toggle('hidden', !isNewTask);
+    if (isNewTask) fillBoardSelect();
+    fillValidatorSelect(task?.validatorUserId || '');
+    toggleValidatorRow(!!document.getElementById('task-requires-validation')?.checked);
 
     renderPriorityPill();
     closePriorityMenu();
@@ -551,9 +632,15 @@ if (taskForm) {
 
         if (!title) return;
 
-        const boardId = currentBoardId ? parseInt(currentBoardId) : null;
+        // Quadro destino: ao criar vem do seletor (pessoal ou Kanban Coletivo);
+        // ao editar a task mantém o board atual.
+        let boardId = currentBoardId ? parseInt(currentBoardId) : null;
+        if (!id) {
+            const boardSel = document.getElementById('task-board-select');
+            if (boardSel && boardSel.value) boardId = parseInt(boardSel.value);
+        }
         if (!boardId && !id) {
-            alert('Erro: Nenhum quadro disponível. Aguarde o carregamento dos quadros.');
+            alert('Erro: Nenhum quadro disponível. Recarregue a página e tente de novo.');
             return;
         }
 
@@ -561,6 +648,17 @@ if (taskForm) {
         if (!id) payload.boardId = boardId;
         if (assignedUserId) payload.assignedUserId = assignedUserId;
         payload.requiresValidation = requiresValidation;
+
+        // Validador: só envia quando exige validação (e é obrigatório escolher um).
+        if (requiresValidation) {
+            const validatorEl = document.getElementById('task-validator');
+            const validatorId = validatorEl?.value ? parseInt(validatorEl.value) : null;
+            if (!validatorId) {
+                alert('Selecione quem vai validar este ticket (aba Detalhes).');
+                return;
+            }
+            payload.validatorUserId = validatorId;
+        }
 
         const priorityEl = document.getElementById('task-priority');
         if (priorityEl) payload.priority = priorityEl.value;
