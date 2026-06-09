@@ -100,7 +100,9 @@
                         <div class="flex flex-wrap gap-1.5 mb-2">
                             <button type="button" class="prazo-chip" data-prazo-val="1" data-prazo-unit="hours">1h</button>
                             <button type="button" class="prazo-chip" data-prazo-val="4" data-prazo-unit="hours">4h</button>
+                            <button type="button" class="prazo-chip" data-prazo-val="8" data-prazo-unit="hours">8h</button>
                             <button type="button" class="prazo-chip" data-prazo-val="1" data-prazo-unit="days">1 dia</button>
+                            <button type="button" class="prazo-chip" data-prazo-val="3" data-prazo-unit="days">3 dias</button>
                             <button type="button" class="prazo-chip" data-prazo-val="1" data-prazo-unit="weeks">1 sem</button>
                         </div>
 
