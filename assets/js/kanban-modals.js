@@ -6,6 +6,46 @@ let currentModalTaskId = null;
 
 const MODAL_TABS = ['principal', 'detalhes', 'atribuicao', 'mensagens'];
 
+// Prazo de Entrega: armazenado como horas (estimatedTime). O dev informa
+// número + unidade (Horas/Dias/Semanas) e o backend deriva a data de entrega.
+const PRAZO_UNIT_HOURS = { hours: 1, days: 24, weeks: 168 };
+
+// Converte horas armazenadas para { valor, unidade } na unidade mais natural.
+function hoursToPrazo(h) {
+    if (!h || h <= 0) return { valor: '', unidade: 'hours' };
+    if (h % PRAZO_UNIT_HOURS.weeks === 0) return { valor: h / PRAZO_UNIT_HOURS.weeks, unidade: 'weeks' };
+    if (h % PRAZO_UNIT_HOURS.days === 0) return { valor: h / PRAZO_UNIT_HOURS.days, unidade: 'days' };
+    return { valor: h, unidade: 'hours' };
+}
+
+// Lê o campo de prazo e devolve o total em horas (inteiro) ou null.
+function prazoToHours() {
+    const valEl = document.getElementById('task-prazo-valor');
+    const unitEl = document.getElementById('task-prazo-unidade');
+    const valor = parseFloat(valEl?.value);
+    if (!valor || valor <= 0) return null;
+    return Math.round(valor * (PRAZO_UNIT_HOURS[unitEl?.value] || 1));
+}
+
+// Atualiza a dica "Entrega prevista" abaixo do campo de prazo (a partir de agora).
+function updatePrazoHint() {
+    const hint = document.getElementById('task-prazo-hint');
+    if (!hint) return;
+    const horas = prazoToHours();
+    if (!horas) { hint.textContent = ''; return; }
+    const data = new Date(Date.now() + horas * 3600000);
+    hint.textContent = '→ Entrega prevista: ' + data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+// Delegação no document: os inputs vivem dentro do form, que é clonado ao
+// carregar (perde listeners diretos), então escutamos no nível do documento.
+document.addEventListener('input', (e) => {
+    if (e.target.id === 'task-prazo-valor') updatePrazoHint();
+});
+document.addEventListener('change', (e) => {
+    if (e.target.id === 'task-prazo-unidade') updatePrazoHint();
+});
+
 function resetModalTabs() {
     switchModalTab('principal');
 }
@@ -87,15 +127,22 @@ function openTaskModal(task = null, status = 'TODO') {
         if (document.getElementById('task-priority'))
             document.getElementById('task-priority').value = task.priority || 'MEDIUM';
 
-        // Prazo — apenas data
-        const dueDateEl = document.getElementById('task-duedate');
-        if (dueDateEl && task.dueDate) {
-            dueDateEl.value = task.dueDate.split('T')[0];
+        // Prazo de Entrega — número + unidade, derivado das horas estimadas
+        const prazoValEl = document.getElementById('task-prazo-valor');
+        const prazoUnitEl = document.getElementById('task-prazo-unidade');
+        if (prazoValEl && prazoUnitEl) {
+            const { valor, unidade } = hoursToPrazo(task.estimatedTime);
+            prazoValEl.value = valor;
+            prazoUnitEl.value = unidade;
         }
-
-        // Tempo estimado em horas
-        const timeEl = document.getElementById('task-time');
-        if (timeEl && task.estimatedTime != null) timeEl.value = task.estimatedTime;
+        const prazoHint = document.getElementById('task-prazo-hint');
+        if (prazoHint) {
+            if (task.dueDate) {
+                prazoHint.textContent = '→ Entrega prevista: ' + new Date(task.dueDate).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            } else {
+                updatePrazoHint();
+            }
+        }
 
         const tagsEl = document.getElementById('task-tags');
         if (tagsEl && task.tags) tagsEl.value = task.tags;
@@ -161,6 +208,10 @@ function openTaskModal(task = null, status = 'TODO') {
 
         const validationToggle = document.getElementById('task-requires-validation');
         if (validationToggle) validationToggle.checked = false;
+
+        // form.reset() já limpa valor/unidade; só falta a dica de entrega.
+        const prazoHint = document.getElementById('task-prazo-hint');
+        if (prazoHint) prazoHint.textContent = '';
 
         const ticketSection = document.getElementById('ticket-info-section');
         if (ticketSection) ticketSection.classList.add('hidden');
@@ -409,11 +460,9 @@ if (taskForm) {
         const priorityEl = document.getElementById('task-priority');
         if (priorityEl) payload.priority = priorityEl.value;
 
-        const dueDateEl = document.getElementById('task-duedate');
-        if (dueDateEl?.value) payload.dueDate = new Date(dueDateEl.value + 'T00:00:00').toISOString();
-
-        const timeEl = document.getElementById('task-time');
-        if (timeEl?.value) payload.estimatedTime = parseFloat(timeEl.value);
+        // Prazo de Entrega → horas estimadas. O backend deriva a data de entrega
+        // (dueDate) a partir das horas, então não enviamos a data daqui.
+        payload.estimatedTime = prazoToHours();
 
         const tagsEl = document.getElementById('task-tags');
         if (tagsEl?.value) payload.tags = tagsEl.value.trim();

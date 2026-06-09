@@ -87,20 +87,23 @@
                         </select>
                     </div>
                     <div>
-                        <label for="task-duedate" class="block text-xs font-medium text-[#888888] mb-1">Prazo de Entrega</label>
-                        <input type="date" id="task-duedate" name="dueDate" class="w-full bg-[#1c1c1c] border border-[#2a2a2a] rounded p-2 text-white focus:border-white focus:outline-none [color-scheme:dark]">
+                        <label for="task-prazo-valor" class="block text-xs font-medium text-[#888888] mb-1">Prazo de Entrega</label>
+                        <div class="flex gap-2">
+                            <input type="number" id="task-prazo-valor" name="prazoValor" placeholder="Ex: 4" min="0" step="1" class="w-16 bg-[#1c1c1c] border border-[#2a2a2a] rounded p-2 text-white focus:border-white focus:outline-none">
+                            <select id="task-prazo-unidade" name="prazoUnidade" class="flex-1 bg-[#1c1c1c] border border-[#2a2a2a] rounded p-2 text-white focus:border-white focus:outline-none">
+                                <option value="hours">Horas</option>
+                                <option value="days">Dias</option>
+                                <option value="weeks">Semanas</option>
+                            </select>
+                        </div>
+                        <p id="task-prazo-hint" class="text-[11px] text-[#666666] mt-1 leading-tight min-h-[14px]"></p>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label for="task-time" class="block text-xs font-medium text-[#888888] mb-1">Tempo Estimado (h)</label>
-                        <input type="number" id="task-time" name="estimatedTime" placeholder="Ex: 4" min="0" step="0.5" class="w-full bg-[#1c1c1c] border border-[#2a2a2a] rounded p-2 text-white focus:border-white focus:outline-none">
-                    </div>
-                    <div>
-                        <label for="task-tags" class="block text-xs font-medium text-[#888888] mb-1">Tags (separadas por vírgula)</label>
-                        <input type="text" id="task-tags" name="tags" placeholder="bug, front, urgente" class="w-full bg-[#1c1c1c] border border-[#2a2a2a] rounded p-2 text-white focus:border-white focus:outline-none">
-                    </div>
+                <div class="mb-4">
+                    <label for="task-tags" class="block text-xs font-medium text-[#888888] mb-1">Tags (separadas por vírgula)</label>
+                    <input type="text" id="task-tags" name="tags" placeholder="empresa, categoria, solicitante" class="w-full bg-[#1c1c1c] border border-[#2a2a2a] rounded p-2 text-white focus:border-white focus:outline-none">
+                    <p class="text-[11px] text-[#555555] mt-1 leading-tight">Geradas automaticamente a partir do ticket (empresa, categoria, solicitante). Você pode editar.</p>
                 </div>
 
                 <!-- Requer Validação -->
