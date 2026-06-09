@@ -496,9 +496,20 @@ async function loadBoardMembersInModal() {
                 }
             }
         } else {
+            // Board sem grupo (coletivo principal / Meu Kanban): atribuível = time de dev.
             const currentUser = DevDeck.getUserData();
-            if (currentUser && currentUser.id) {
-                members = [{ id: currentUser.id, name: currentUser.name, email: currentUser.email }];
+            try {
+                const devTeam = await DevDeck.fetchApiSilent('/user/dev-team');
+                if (Array.isArray(devTeam) && devTeam.length) {
+                    members = devTeam.map(u => ({ id: u.id, name: u.name, email: u.email }));
+                }
+            } catch (err) {
+                // Endpoint indisponível (ex.: backend antigo) → cai no fallback abaixo, sem alerta.
+                console.warn('Não foi possível carregar o time de dev:', err?.message || err);
+            }
+            // Garantia: o próprio usuário sempre presente (e fallback se a lista veio vazia).
+            if (currentUser && currentUser.id && !members.some(m => m.id === currentUser.id)) {
+                members.push({ id: currentUser.id, name: currentUser.name, email: currentUser.email });
             }
         }
 
