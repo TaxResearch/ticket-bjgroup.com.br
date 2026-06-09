@@ -7,10 +7,19 @@
                 <span id="modal-category-badge" class="hidden text-xs font-medium px-2.5 py-1 rounded-full bg-[#2a2a2a] border border-[#404040] text-[#cccccc] shrink-0"></span>
             </div>
             <div class="flex items-center gap-2 shrink-0">
-                <button type="button" id="task-priority-pill" class="priority-pill prio-medium" title="Clique para mudar a prioridade">
-                    <span class="priority-dot"></span>
-                    <span id="task-priority-label">Média</span>
-                </button>
+                <div class="relative" id="task-priority-wrap">
+                    <button type="button" id="task-priority-pill" class="priority-pill prio-medium" aria-haspopup="true" aria-expanded="false" title="Prioridade">
+                        <span class="priority-dot"></span>
+                        <span id="task-priority-label">Média</span>
+                        <svg class="w-3 h-3 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div id="task-priority-menu" class="hidden absolute right-0 mt-1.5 w-40 bg-[#1c1c1c] border border-[#2a2a2a] rounded-lg shadow-xl z-10 py-1 overflow-hidden">
+                        <button type="button" class="priority-option" data-priority="LOW"><span class="priority-dot" style="background:#22c55e"></span>Baixa</button>
+                        <button type="button" class="priority-option" data-priority="MEDIUM"><span class="priority-dot" style="background:#eab308"></span>Média</button>
+                        <button type="button" class="priority-option" data-priority="HIGH"><span class="priority-dot" style="background:#f97316"></span>Alta</button>
+                        <button type="button" class="priority-option" data-priority="URGENT"><span class="priority-dot" style="background:#ef4444"></span>Urgente</button>
+                    </div>
+                </div>
                 <button type="button" id="modal-close-x" class="text-[#555555] hover:text-white transition-colors -mt-px" aria-label="Fechar">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -110,18 +119,26 @@
                         <button type="button" class="prazo-chip" data-prazo-val="1" data-prazo-unit="weeks">1 sem</button>
                     </div>
 
-                    <div class="flex gap-2">
+                    <div class="flex gap-2 items-stretch">
                         <!-- stepper custom -->
                         <div class="prazo-stepper">
                             <button type="button" id="task-prazo-minus" class="prazo-step-btn" tabindex="-1" aria-label="Diminuir">&minus;</button>
                             <input type="number" id="task-prazo-valor" name="prazoValor" placeholder="0" min="0" step="1" class="prazo-step-input">
                             <button type="button" id="task-prazo-plus" class="prazo-step-btn" tabindex="-1" aria-label="Aumentar">+</button>
                         </div>
-                        <select id="task-prazo-unidade" name="prazoUnidade" class="flex-1 bg-[#1c1c1c] border border-[#2a2a2a] rounded-lg p-2.5 text-white focus:border-white focus:outline-none">
+                        <select id="task-prazo-unidade" name="prazoUnidade" class="w-32 shrink-0 bg-[#1c1c1c] border border-[#2a2a2a] rounded-lg p-2.5 text-white focus:border-white focus:outline-none">
                             <option value="hours">Horas</option>
                             <option value="days">Dias</option>
                             <option value="weeks">Semanas</option>
                         </select>
+                        <!-- Requer Validação (inline, ocupa o espaço restante) -->
+                        <div class="flex-1 flex items-center justify-between gap-2 px-3.5 bg-[#1c1c1c] rounded-lg border border-[#2a2a2a] hover:border-[#404040] transition-colors" title="Impede concluir sem validação de outro membro">
+                            <span class="text-sm font-medium text-white whitespace-nowrap">Requer validação</span>
+                            <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+                                <input type="checkbox" id="task-requires-validation" class="sr-only peer">
+                                <div class="w-11 h-6 bg-[#2a2a2a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[#404040] after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-600"></div>
+                            </label>
+                        </div>
                     </div>
                     <p id="task-prazo-hint" class="text-[11px] text-[#666666] mt-1.5 leading-tight min-h-[14px]"></p>
                 </div>
@@ -130,18 +147,6 @@
                     <label for="task-tags" class="block text-xs font-medium text-[#888888] mb-1">Tags (separadas por vírgula)</label>
                     <input type="text" id="task-tags" name="tags" placeholder="empresa, categoria, solicitante" class="w-full bg-[#1c1c1c] border border-[#2a2a2a] rounded-lg p-2.5 text-white focus:border-white focus:outline-none">
                     <p class="text-[11px] text-[#555555] mt-1 leading-tight">Geradas automaticamente a partir do ticket (empresa, categoria, solicitante). Você pode editar.</p>
-                </div>
-
-                <!-- Requer Validação -->
-                <div class="flex items-center justify-between p-4 bg-[#1c1c1c] rounded-xl border border-[#2a2a2a] hover:border-[#404040] transition-colors">
-                    <div>
-                        <span class="text-sm font-medium text-white">Requer Validação</span>
-                        <p class="text-xs text-[#555555] mt-0.5">Impede concluir sem validação de outro membro</p>
-                    </div>
-                    <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
-                        <input type="checkbox" id="task-requires-validation" class="sr-only peer">
-                        <div class="w-11 h-6 bg-[#2a2a2a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[#404040] after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-600"></div>
-                    </label>
                 </div>
 
             </div><!-- /modal-panel-detalhes -->

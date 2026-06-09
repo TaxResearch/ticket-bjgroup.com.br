@@ -220,6 +220,22 @@ select.modal-select option {
 .prio-urgent { background: rgba(239,68,68,.14);  border-color: rgba(239,68,68,.42);  color: #fca5a5; }
 .prio-urgent .priority-dot { background: #ef4444; }
 
+/* Dropdown de prioridade */
+.priority-option {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    width: 100%;
+    padding: .45rem .75rem;
+    font-size: .8rem;
+    color: #cfcfcf;
+    text-align: left;
+    transition: background-color .12s, color .12s;
+}
+.priority-option:hover { background: #2a2a2a; color: #fff; }
+.priority-option .priority-dot { width: .55rem; height: .55rem; border-radius: 9999px; flex: 0 0 auto; }
+.priority-option-active { color: #fff; font-weight: 600; }
+
 .column-header {
     color: #ffffff;
     letter-spacing: 0.5px;

@@ -68,7 +68,7 @@ const PRIORITY_META = {
     URGENT: { label: 'Urgente', cls: 'prio-urgent' },
 };
 
-// Reflete no pill o valor atual do <select> de prioridade.
+// Reflete no pill o valor atual do <select> e marca a opção ativa no dropdown.
 function renderPriorityPill() {
     const sel = document.getElementById('task-priority');
     const pill = document.getElementById('task-priority-pill');
@@ -77,15 +77,21 @@ function renderPriorityPill() {
     const meta = PRIORITY_META[sel.value] || PRIORITY_META.MEDIUM;
     pill.className = 'priority-pill ' + meta.cls;
     label.textContent = meta.label;
+    document.querySelectorAll('.priority-option').forEach(o =>
+        o.classList.toggle('priority-option-active', o.dataset.priority === sel.value));
 }
 
-// Avança a prioridade para a próxima (clique no pill).
-function cyclePriority() {
-    const sel = document.getElementById('task-priority');
-    if (!sel) return;
-    const i = PRIORITY_ORDER.indexOf(sel.value);
-    sel.value = PRIORITY_ORDER[(i + 1) % PRIORITY_ORDER.length];
-    renderPriorityPill();
+// Dropdown de prioridade: abre/fecha ao clicar no pill.
+function closePriorityMenu() {
+    document.getElementById('task-priority-menu')?.classList.add('hidden');
+    document.getElementById('task-priority-pill')?.setAttribute('aria-expanded', 'false');
+}
+function togglePriorityMenu() {
+    const menu = document.getElementById('task-priority-menu');
+    if (!menu) return;
+    const willOpen = menu.classList.contains('hidden');
+    menu.classList.toggle('hidden', !willOpen);
+    document.getElementById('task-priority-pill')?.setAttribute('aria-expanded', String(willOpen));
 }
 
 // Delegação no document: os inputs vivem dentro do form, que é clonado ao
@@ -97,7 +103,18 @@ document.addEventListener('change', (e) => {
     if (e.target.id === 'task-prazo-unidade') { updatePrazoHint(); highlightPrazoPreset(); }
 });
 document.addEventListener('click', (e) => {
-    if (e.target.closest?.('#task-priority-pill')) { e.preventDefault(); cyclePriority(); return; }
+    // Prioridade — abre o menu, seleciona opção ou fecha ao clicar fora
+    if (e.target.closest?.('#task-priority-pill')) { e.preventDefault(); togglePriorityMenu(); return; }
+    const prioOpt = e.target.closest?.('.priority-option');
+    if (prioOpt) {
+        e.preventDefault();
+        const sel = document.getElementById('task-priority');
+        if (sel) { sel.value = prioOpt.dataset.priority; renderPriorityPill(); }
+        closePriorityMenu();
+        return;
+    }
+    if (!e.target.closest?.('#task-priority-menu')) closePriorityMenu();
+
     if (e.target.id === 'task-prazo-minus') { e.preventDefault(); stepPrazo(-1); return; }
     if (e.target.id === 'task-prazo-plus')  { e.preventDefault(); stepPrazo(1);  return; }
     const chip = e.target.closest?.('.prazo-chip');
@@ -291,6 +308,7 @@ function openTaskModal(task = null, status = 'TODO') {
     }
 
     renderPriorityPill();
+    closePriorityMenu();
     loadBoardMembersInModal();
     modal.classList.remove('hidden');
 }
@@ -585,6 +603,7 @@ if (taskForm) {
 // ─── Fechar / Deletar ─────────────────────────────────────────────────────────
 
 function closeTaskModal() {
+    closePriorityMenu();
     document.getElementById('task-modal').classList.add('hidden');
 }
 
