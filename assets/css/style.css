@@ -194,6 +194,10 @@ select.modal-select option {
 .prazo-step-btn   { width: 2.5rem; }
 .prazo-step-input { width: 4rem; padding: .6rem 0; }
 
+/* dica de entrega prevista (lado direito da linha do prazo) */
+#task-prazo-hint { color: #b0b0b0; font-weight: 500; }
+#task-prazo-hint.prazo-hint-empty { color: #555555; font-weight: 400; font-style: italic; }
+
 /* Prioridade — pill clicável no header (cicla a prioridade) */
 .priority-pill {
     display: inline-flex;

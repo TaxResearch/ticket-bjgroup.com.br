@@ -106,8 +106,12 @@
                     <option value="URGENT">🔴 Urgente</option>
                 </select>
 
-                <div class="mb-4">
-                    <label for="task-prazo-valor" class="block text-xs font-medium text-[#888888] mb-1.5">Prazo de Entrega</label>
+                <!-- Prazo de Entrega -->
+                <div class="mb-5">
+                    <label for="task-prazo-valor" class="flex items-center gap-1.5 text-xs font-medium text-[#888888] mb-2">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        Prazo de Entrega
+                    </label>
 
                     <!-- atalhos rápidos -->
                     <div class="grid grid-cols-6 gap-1.5 mb-2">
@@ -119,7 +123,7 @@
                         <button type="button" class="prazo-chip" data-prazo-val="1" data-prazo-unit="weeks">1 sem</button>
                     </div>
 
-                    <div class="flex gap-2 items-stretch">
+                    <div class="flex gap-2 items-center">
                         <!-- stepper custom -->
                         <div class="prazo-stepper">
                             <button type="button" id="task-prazo-minus" class="prazo-step-btn" tabindex="-1" aria-label="Diminuir">&minus;</button>
@@ -131,22 +135,37 @@
                             <option value="days">Dias</option>
                             <option value="weeks">Semanas</option>
                         </select>
-                        <!-- Requer Validação (inline, ocupa o espaço restante) -->
-                        <div class="flex-1 flex items-center justify-between gap-2 px-3.5 bg-[#1c1c1c] rounded-lg border border-[#2a2a2a] hover:border-[#404040] transition-colors" title="Impede concluir sem validação de outro membro">
-                            <span class="text-sm font-medium text-white whitespace-nowrap">Requer validação</span>
-                            <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
-                                <input type="checkbox" id="task-requires-validation" class="sr-only peer">
-                                <div class="w-11 h-6 bg-[#2a2a2a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[#404040] after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-600"></div>
-                            </label>
+                        <!-- entrega prevista (preenche o restante da linha) -->
+                        <div class="flex-1 flex items-center justify-end gap-1.5 text-[12px] min-w-0">
+                            <svg class="w-3.5 h-3.5 text-[#666666] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            <span id="task-prazo-hint" class="prazo-hint-empty truncate">Sem prazo definido</span>
                         </div>
                     </div>
-                    <p id="task-prazo-hint" class="text-[11px] text-[#666666] mt-1.5 leading-tight min-h-[14px]"></p>
                 </div>
 
-                <div class="mb-4">
-                    <label for="task-tags" class="block text-xs font-medium text-[#888888] mb-1">Tags (separadas por vírgula)</label>
+                <!-- Tags -->
+                <div class="mb-5">
+                    <label for="task-tags" class="flex items-center gap-1.5 text-xs font-medium text-[#888888] mb-2">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-5 5a2 2 0 01-2.828 0l-7-7A2 2 0 013 9.172V5a2 2 0 012-2z"/></svg>
+                        Tags <span class="font-normal text-[#555555]">(separadas por vírgula)</span>
+                    </label>
                     <input type="text" id="task-tags" name="tags" placeholder="empresa, categoria, solicitante" class="w-full bg-[#1c1c1c] border border-[#2a2a2a] rounded-lg p-2.5 text-white focus:border-white focus:outline-none">
-                    <p class="text-[11px] text-[#555555] mt-1 leading-tight">Geradas automaticamente a partir do ticket (empresa, categoria, solicitante). Você pode editar.</p>
+                    <p class="text-[11px] text-[#555555] mt-1.5 leading-tight">Geradas automaticamente a partir do ticket (empresa, categoria, solicitante). Você pode editar.</p>
+                </div>
+
+                <!-- Requer Validação -->
+                <div class="flex items-center justify-between p-4 bg-[#1c1c1c] rounded-xl border border-[#2a2a2a] hover:border-[#404040] transition-colors">
+                    <div class="flex items-center gap-3">
+                        <svg class="w-5 h-5 text-[#5a5a5a] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                        <div>
+                            <span class="text-sm font-medium text-white">Requer validação</span>
+                            <p class="text-xs text-[#555555] mt-0.5">Impede concluir sem validação de outro membro</p>
+                        </div>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+                        <input type="checkbox" id="task-requires-validation" class="sr-only peer">
+                        <div class="w-11 h-6 bg-[#2a2a2a] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[#404040] after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-600"></div>
+                    </label>
                 </div>
 
             </div><!-- /modal-panel-detalhes -->

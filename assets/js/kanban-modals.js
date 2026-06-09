@@ -27,14 +27,23 @@ function prazoToHours() {
     return Math.round(valor * (PRAZO_UNIT_HOURS[unitEl?.value] || 1));
 }
 
-// Atualiza a dica "Entrega prevista" abaixo do campo de prazo (a partir de agora).
+// Formata a data de entrega no padrão exibido na dica.
+function formatPrazoData(date) {
+    return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+// Atualiza a dica de entrega ao lado do campo de prazo (a partir de agora).
 function updatePrazoHint() {
     const hint = document.getElementById('task-prazo-hint');
     if (!hint) return;
     const horas = prazoToHours();
-    if (!horas) { hint.textContent = ''; return; }
-    const data = new Date(Date.now() + horas * 3600000);
-    hint.textContent = '→ Entrega prevista: ' + data.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    if (!horas) {
+        hint.textContent = 'Sem prazo definido';
+        hint.classList.add('prazo-hint-empty');
+        return;
+    }
+    hint.textContent = 'Entrega ' + formatPrazoData(new Date(Date.now() + horas * 3600000));
+    hint.classList.remove('prazo-hint-empty');
 }
 
 // Incrementa/decrementa o valor do prazo (mínimo 0) e ressincroniza a UI.
@@ -219,7 +228,8 @@ function openTaskModal(task = null, status = 'TODO') {
         const prazoHint = document.getElementById('task-prazo-hint');
         if (prazoHint) {
             if (task.dueDate) {
-                prazoHint.textContent = '→ Entrega prevista: ' + new Date(task.dueDate).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                prazoHint.textContent = 'Entrega ' + formatPrazoData(new Date(task.dueDate));
+                prazoHint.classList.remove('prazo-hint-empty');
             } else {
                 updatePrazoHint();
             }
@@ -291,9 +301,8 @@ function openTaskModal(task = null, status = 'TODO') {
         const validationToggle = document.getElementById('task-requires-validation');
         if (validationToggle) validationToggle.checked = false;
 
-        // form.reset() já limpa valor/unidade; só falta a dica de entrega.
-        const prazoHint = document.getElementById('task-prazo-hint');
-        if (prazoHint) prazoHint.textContent = '';
+        // form.reset() já limpa valor/unidade; atualiza a dica (placeholder).
+        updatePrazoHint();
         highlightPrazoPreset();
 
         const ticketSection = document.getElementById('ticket-info-section');
