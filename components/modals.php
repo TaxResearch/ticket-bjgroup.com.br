@@ -108,36 +108,38 @@
 
                 <!-- Prazo de Entrega -->
                 <div class="mb-5">
-                    <label for="task-prazo-valor" class="flex items-center gap-1.5 text-xs font-medium text-[#888888] mb-2">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        Prazo de Entrega
-                    </label>
-
-                    <!-- atalhos rápidos -->
-                    <div class="flex flex-wrap justify-center gap-2 mb-2">
-                        <button type="button" class="prazo-chip" data-prazo-val="4" data-prazo-unit="hours">4h</button>
-                        <button type="button" class="prazo-chip" data-prazo-val="8" data-prazo-unit="hours">8h</button>
-                        <button type="button" class="prazo-chip" data-prazo-val="3" data-prazo-unit="days">3 dias</button>
-                        <button type="button" class="prazo-chip" data-prazo-val="1" data-prazo-unit="weeks">1 sem</button>
-                    </div>
-
-                    <div class="flex gap-3 items-center justify-center">
-                        <!-- entrega prevista -->
-                        <div class="flex items-center gap-1.5 text-[12px] pr-1">
+                    <div class="flex items-center justify-between gap-2 mb-2.5">
+                        <label for="task-prazo-valor" class="flex items-center gap-1.5 text-xs font-medium text-[#888888]">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Prazo de Entrega
+                        </label>
+                        <div class="flex items-center gap-1.5 text-[12px]">
                             <svg class="w-3.5 h-3.5 text-[#666666] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                             <span id="task-prazo-hint" class="prazo-hint-empty whitespace-nowrap">Sem prazo definido</span>
                         </div>
-                        <!-- stepper custom -->
-                        <div class="prazo-stepper">
-                            <button type="button" id="task-prazo-minus" class="prazo-step-btn" tabindex="-1" aria-label="Diminuir">&minus;</button>
-                            <input type="number" id="task-prazo-valor" name="prazoValor" placeholder="0" min="0" step="1" class="prazo-step-input">
-                            <button type="button" id="task-prazo-plus" class="prazo-step-btn" tabindex="-1" aria-label="Aumentar">+</button>
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+                        <!-- atalhos rápidos -->
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" class="prazo-chip" data-prazo-val="4" data-prazo-unit="hours">4h</button>
+                            <button type="button" class="prazo-chip" data-prazo-val="8" data-prazo-unit="hours">8h</button>
+                            <button type="button" class="prazo-chip" data-prazo-val="3" data-prazo-unit="days">3 dias</button>
+                            <button type="button" class="prazo-chip" data-prazo-val="1" data-prazo-unit="weeks">1 sem</button>
                         </div>
-                        <select id="task-prazo-unidade" name="prazoUnidade" class="w-36 shrink-0 bg-[#1c1c1c] border border-[#2a2a2a] rounded-lg p-2.5 text-white focus:border-white focus:outline-none">
-                            <option value="hours">Horas</option>
-                            <option value="days">Dias</option>
-                            <option value="weeks">Semanas</option>
-                        </select>
+                        <!-- stepper + unidade -->
+                        <div class="flex items-center gap-2">
+                            <div class="prazo-stepper">
+                                <button type="button" id="task-prazo-minus" class="prazo-step-btn" tabindex="-1" aria-label="Diminuir">&minus;</button>
+                                <input type="number" id="task-prazo-valor" name="prazoValor" placeholder="0" min="0" step="1" class="prazo-step-input">
+                                <button type="button" id="task-prazo-plus" class="prazo-step-btn" tabindex="-1" aria-label="Aumentar">+</button>
+                            </div>
+                            <select id="task-prazo-unidade" name="prazoUnidade" class="w-36 shrink-0 bg-[#1c1c1c] border border-[#2a2a2a] rounded-lg p-2.5 text-white focus:border-white focus:outline-none">
+                                <option value="hours">Horas</option>
+                                <option value="days">Dias</option>
+                                <option value="weeks">Semanas</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
