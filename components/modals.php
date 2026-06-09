@@ -119,27 +119,26 @@
                         </div>
                     </div>
 
-                    <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
-                        <!-- atalhos rápidos -->
-                        <div class="flex flex-wrap gap-2">
-                            <button type="button" class="prazo-chip" data-prazo-val="4" data-prazo-unit="hours">4h</button>
-                            <button type="button" class="prazo-chip" data-prazo-val="8" data-prazo-unit="hours">8h</button>
-                            <button type="button" class="prazo-chip" data-prazo-val="3" data-prazo-unit="days">3 dias</button>
-                            <button type="button" class="prazo-chip" data-prazo-val="1" data-prazo-unit="weeks">1 sem</button>
+                    <!-- atalhos: controle segmentado (largura toda) -->
+                    <div class="grid grid-cols-4 rounded-lg overflow-hidden border border-[#2a2a2a] mb-2">
+                        <button type="button" class="prazo-chip" data-prazo-val="4" data-prazo-unit="hours">4h</button>
+                        <button type="button" class="prazo-chip" data-prazo-val="8" data-prazo-unit="hours">8h</button>
+                        <button type="button" class="prazo-chip" data-prazo-val="3" data-prazo-unit="days">3 dias</button>
+                        <button type="button" class="prazo-chip" data-prazo-val="1" data-prazo-unit="weeks">1 sem</button>
+                    </div>
+
+                    <!-- entrada manual: stepper + unidade dividindo a linha (largura toda) -->
+                    <div class="flex items-stretch gap-2">
+                        <div class="prazo-stepper flex-1">
+                            <button type="button" id="task-prazo-minus" class="prazo-step-btn" tabindex="-1" aria-label="Diminuir">&minus;</button>
+                            <input type="number" id="task-prazo-valor" name="prazoValor" placeholder="0" min="0" step="1" class="prazo-step-input">
+                            <button type="button" id="task-prazo-plus" class="prazo-step-btn" tabindex="-1" aria-label="Aumentar">+</button>
                         </div>
-                        <!-- stepper + unidade -->
-                        <div class="flex items-center gap-2">
-                            <div class="prazo-stepper">
-                                <button type="button" id="task-prazo-minus" class="prazo-step-btn" tabindex="-1" aria-label="Diminuir">&minus;</button>
-                                <input type="number" id="task-prazo-valor" name="prazoValor" placeholder="0" min="0" step="1" class="prazo-step-input">
-                                <button type="button" id="task-prazo-plus" class="prazo-step-btn" tabindex="-1" aria-label="Aumentar">+</button>
-                            </div>
-                            <select id="task-prazo-unidade" name="prazoUnidade" class="w-36 shrink-0 bg-[#1c1c1c] border border-[#2a2a2a] rounded-lg p-2.5 text-white focus:border-white focus:outline-none">
-                                <option value="hours">Horas</option>
-                                <option value="days">Dias</option>
-                                <option value="weeks">Semanas</option>
-                            </select>
-                        </div>
+                        <select id="task-prazo-unidade" name="prazoUnidade" class="flex-1 bg-[#1c1c1c] border border-[#2a2a2a] rounded-lg p-2.5 text-white focus:border-white focus:outline-none">
+                            <option value="hours">Horas</option>
+                            <option value="days">Dias</option>
+                            <option value="weeks">Semanas</option>
+                        </select>
                     </div>
                 </div>
 
