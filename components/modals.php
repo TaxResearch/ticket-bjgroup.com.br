@@ -114,7 +114,7 @@
                     </label>
 
                     <!-- atalhos rápidos -->
-                    <div class="grid grid-cols-4 gap-1.5 mb-2">
+                    <div class="flex flex-wrap justify-center gap-2 mb-2">
                         <button type="button" class="prazo-chip" data-prazo-val="4" data-prazo-unit="hours">4h</button>
                         <button type="button" class="prazo-chip" data-prazo-val="8" data-prazo-unit="hours">8h</button>
                         <button type="button" class="prazo-chip" data-prazo-val="3" data-prazo-unit="days">3 dias</button>
