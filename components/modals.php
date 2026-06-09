@@ -1,16 +1,22 @@
 <div id="task-modal" class="modal fixed inset-0 flex items-center justify-center z-40 hidden">
     <div class="modal-backdrop absolute inset-0 bg-black/60"></div>
     <div class="modal-content relative p-7 rounded-2xl w-full max-w-2xl mx-4 bg-[#141414] border border-[#2a2a2a] shadow-2xl max-h-[90vh] overflow-y-auto">
-        <div class="flex items-start justify-between mb-5">
+        <div class="flex items-center justify-between mb-5 gap-3">
             <div class="flex items-center gap-3 min-w-0">
                 <h3 id="modal-title" class="text-xl font-semibold text-white truncate">Nova Tarefa</h3>
                 <span id="modal-category-badge" class="hidden text-xs font-medium px-2.5 py-1 rounded-full bg-[#2a2a2a] border border-[#404040] text-[#cccccc] shrink-0"></span>
             </div>
-            <button type="button" id="modal-close-x" class="text-[#555555] hover:text-white transition-colors shrink-0 -mt-0.5" aria-label="Fechar">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
+            <div class="flex items-center gap-2 shrink-0">
+                <button type="button" id="task-priority-pill" class="priority-pill prio-medium" title="Clique para mudar a prioridade">
+                    <span class="priority-dot"></span>
+                    <span id="task-priority-label">Média</span>
+                </button>
+                <button type="button" id="modal-close-x" class="text-[#555555] hover:text-white transition-colors -mt-px" aria-label="Fechar">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
         </div>
 
         <!-- Abas internas do modal -->
@@ -83,44 +89,41 @@
             <!-- ── ABA DETALHES ── -->
             <div id="modal-panel-detalhes" class="hidden">
 
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label for="task-priority" class="block text-xs font-medium text-[#888888] mb-1">Prioridade</label>
-                        <select id="task-priority" name="priority" class="w-full bg-[#1c1c1c] border border-[#2a2a2a] rounded-lg p-2.5 text-white focus:border-white focus:outline-none">
-                            <option value="LOW">🟢 Baixa</option>
-                            <option value="MEDIUM" selected>🟡 Média</option>
-                            <option value="HIGH">🟠 Alta</option>
-                            <option value="URGENT">🔴 Urgente</option>
+                <!-- Prioridade: controlada pelo botão colorido no header (#task-priority-pill) -->
+                <select id="task-priority" name="priority" class="hidden">
+                    <option value="LOW">🟢 Baixa</option>
+                    <option value="MEDIUM" selected>🟡 Média</option>
+                    <option value="HIGH">🟠 Alta</option>
+                    <option value="URGENT">🔴 Urgente</option>
+                </select>
+
+                <div class="mb-4">
+                    <label for="task-prazo-valor" class="block text-xs font-medium text-[#888888] mb-1.5">Prazo de Entrega</label>
+
+                    <!-- atalhos rápidos -->
+                    <div class="grid grid-cols-6 gap-1.5 mb-2">
+                        <button type="button" class="prazo-chip" data-prazo-val="1" data-prazo-unit="hours">1h</button>
+                        <button type="button" class="prazo-chip" data-prazo-val="4" data-prazo-unit="hours">4h</button>
+                        <button type="button" class="prazo-chip" data-prazo-val="8" data-prazo-unit="hours">8h</button>
+                        <button type="button" class="prazo-chip" data-prazo-val="1" data-prazo-unit="days">1 dia</button>
+                        <button type="button" class="prazo-chip" data-prazo-val="3" data-prazo-unit="days">3 dias</button>
+                        <button type="button" class="prazo-chip" data-prazo-val="1" data-prazo-unit="weeks">1 sem</button>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <!-- stepper custom -->
+                        <div class="prazo-stepper">
+                            <button type="button" id="task-prazo-minus" class="prazo-step-btn" tabindex="-1" aria-label="Diminuir">&minus;</button>
+                            <input type="number" id="task-prazo-valor" name="prazoValor" placeholder="0" min="0" step="1" class="prazo-step-input">
+                            <button type="button" id="task-prazo-plus" class="prazo-step-btn" tabindex="-1" aria-label="Aumentar">+</button>
+                        </div>
+                        <select id="task-prazo-unidade" name="prazoUnidade" class="flex-1 bg-[#1c1c1c] border border-[#2a2a2a] rounded-lg p-2.5 text-white focus:border-white focus:outline-none">
+                            <option value="hours">Horas</option>
+                            <option value="days">Dias</option>
+                            <option value="weeks">Semanas</option>
                         </select>
                     </div>
-                    <div>
-                        <label for="task-prazo-valor" class="block text-xs font-medium text-[#888888] mb-1.5">Prazo de Entrega</label>
-
-                        <!-- atalhos rápidos -->
-                        <div class="flex flex-wrap gap-1.5 mb-2">
-                            <button type="button" class="prazo-chip" data-prazo-val="1" data-prazo-unit="hours">1h</button>
-                            <button type="button" class="prazo-chip" data-prazo-val="4" data-prazo-unit="hours">4h</button>
-                            <button type="button" class="prazo-chip" data-prazo-val="8" data-prazo-unit="hours">8h</button>
-                            <button type="button" class="prazo-chip" data-prazo-val="1" data-prazo-unit="days">1 dia</button>
-                            <button type="button" class="prazo-chip" data-prazo-val="3" data-prazo-unit="days">3 dias</button>
-                            <button type="button" class="prazo-chip" data-prazo-val="1" data-prazo-unit="weeks">1 sem</button>
-                        </div>
-
-                        <div class="flex gap-2">
-                            <!-- stepper custom -->
-                            <div class="prazo-stepper">
-                                <button type="button" id="task-prazo-minus" class="prazo-step-btn" tabindex="-1" aria-label="Diminuir">&minus;</button>
-                                <input type="number" id="task-prazo-valor" name="prazoValor" placeholder="0" min="0" step="1" class="prazo-step-input">
-                                <button type="button" id="task-prazo-plus" class="prazo-step-btn" tabindex="-1" aria-label="Aumentar">+</button>
-                            </div>
-                            <select id="task-prazo-unidade" name="prazoUnidade" class="flex-1 bg-[#1c1c1c] border border-[#2a2a2a] rounded-lg p-2.5 text-white focus:border-white focus:outline-none">
-                                <option value="hours">Horas</option>
-                                <option value="days">Dias</option>
-                                <option value="weeks">Semanas</option>
-                            </select>
-                        </div>
-                        <p id="task-prazo-hint" class="text-[11px] text-[#666666] mt-1.5 leading-tight min-h-[14px]"></p>
-                    </div>
+                    <p id="task-prazo-hint" class="text-[11px] text-[#666666] mt-1.5 leading-tight min-h-[14px]"></p>
                 </div>
 
                 <div class="mb-4">

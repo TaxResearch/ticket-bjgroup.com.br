@@ -190,6 +190,36 @@ select.modal-select option {
 .prazo-chip:hover { border-color: #404040; color: #fff; }
 .prazo-chip-active { background: #fff; color: #000; border-color: #fff; }
 
+/* stepper um pouco maior (ocupa melhor a largura total) */
+.prazo-step-btn   { width: 2.5rem; }
+.prazo-step-input { width: 4rem; padding: .6rem 0; }
+
+/* Prioridade — pill clicável no header (cicla a prioridade) */
+.priority-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .3rem .7rem;
+    border-radius: 9999px;
+    font-size: .75rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+    cursor: pointer;
+    user-select: none;
+    transition: filter .15s, background-color .15s, border-color .15s;
+}
+.priority-pill:hover { filter: brightness(1.18); }
+.priority-pill .priority-dot { width: .55rem; height: .55rem; border-radius: 9999px; flex: 0 0 auto; }
+
+.prio-low    { background: rgba(34,197,94,.12);  border-color: rgba(34,197,94,.35);  color: #86efac; }
+.prio-low    .priority-dot { background: #22c55e; }
+.prio-medium { background: rgba(234,179,8,.13);  border-color: rgba(234,179,8,.38);  color: #fde047; }
+.prio-medium .priority-dot { background: #eab308; }
+.prio-high   { background: rgba(249,115,22,.13); border-color: rgba(249,115,22,.38); color: #fdba74; }
+.prio-high   .priority-dot { background: #f97316; }
+.prio-urgent { background: rgba(239,68,68,.14);  border-color: rgba(239,68,68,.42);  color: #fca5a5; }
+.prio-urgent .priority-dot { background: #ef4444; }
+
 .column-header {
     color: #ffffff;
     letter-spacing: 0.5px;

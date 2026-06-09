@@ -57,6 +57,37 @@ function highlightPrazoPreset() {
     });
 }
 
+// Prioridade — controlada pelo pill colorido no header (#task-priority-pill).
+// O <select id="task-priority"> continua sendo a fonte da verdade (lido no submit);
+// o pill é só a camada visual que cicla LOW → MEDIUM → HIGH → URGENT → LOW.
+const PRIORITY_ORDER = ['LOW', 'MEDIUM', 'HIGH', 'URGENT'];
+const PRIORITY_META = {
+    LOW:    { label: 'Baixa',   cls: 'prio-low' },
+    MEDIUM: { label: 'Média',   cls: 'prio-medium' },
+    HIGH:   { label: 'Alta',    cls: 'prio-high' },
+    URGENT: { label: 'Urgente', cls: 'prio-urgent' },
+};
+
+// Reflete no pill o valor atual do <select> de prioridade.
+function renderPriorityPill() {
+    const sel = document.getElementById('task-priority');
+    const pill = document.getElementById('task-priority-pill');
+    const label = document.getElementById('task-priority-label');
+    if (!sel || !pill || !label) return;
+    const meta = PRIORITY_META[sel.value] || PRIORITY_META.MEDIUM;
+    pill.className = 'priority-pill ' + meta.cls;
+    label.textContent = meta.label;
+}
+
+// Avança a prioridade para a próxima (clique no pill).
+function cyclePriority() {
+    const sel = document.getElementById('task-priority');
+    if (!sel) return;
+    const i = PRIORITY_ORDER.indexOf(sel.value);
+    sel.value = PRIORITY_ORDER[(i + 1) % PRIORITY_ORDER.length];
+    renderPriorityPill();
+}
+
 // Delegação no document: os inputs vivem dentro do form, que é clonado ao
 // carregar (perde listeners diretos), então escutamos no nível do documento.
 document.addEventListener('input', (e) => {
@@ -66,6 +97,7 @@ document.addEventListener('change', (e) => {
     if (e.target.id === 'task-prazo-unidade') { updatePrazoHint(); highlightPrazoPreset(); }
 });
 document.addEventListener('click', (e) => {
+    if (e.target.closest?.('#task-priority-pill')) { e.preventDefault(); cyclePriority(); return; }
     if (e.target.id === 'task-prazo-minus') { e.preventDefault(); stepPrazo(-1); return; }
     if (e.target.id === 'task-prazo-plus')  { e.preventDefault(); stepPrazo(1);  return; }
     const chip = e.target.closest?.('.prazo-chip');
@@ -258,6 +290,7 @@ function openTaskModal(task = null, status = 'TODO') {
         if (tabMensagens) tabMensagens.classList.add('hidden');
     }
 
+    renderPriorityPill();
     loadBoardMembersInModal();
     modal.classList.remove('hidden');
 }
