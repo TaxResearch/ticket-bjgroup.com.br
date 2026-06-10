@@ -49,6 +49,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         // Carregar boards pessoais em background (para criação de tasks)
         loadPersonalBoards();
         loadDevTeamCache();
+        loadValidationBadge();
 
         // Módulos extras
         if (typeof loadUserSettings === 'function') await loadUserSettings();
@@ -167,7 +168,7 @@ function initTabs() {
 }
 
 function switchTab(tab, updateHash = true) {
-    const validTabs = ['kanban', 'coletivo', 'historico'];
+    const validTabs = ['kanban', 'coletivo', 'validacao', 'historico'];
     if (!validTabs.includes(tab)) tab = 'kanban';
 
     if (updateHash) window.location.hash = tab;
@@ -189,6 +190,7 @@ function switchTab(tab, updateHash = true) {
 
     if (tab === 'kanban') loadPersonalTasks();
     else if (tab === 'coletivo') loadCollectiveTasks();
+    else if (tab === 'validacao') loadValidationTasks();
     else if (tab === 'historico') loadHistory();
 }
 
@@ -617,6 +619,108 @@ async function pickupTask(taskId, btn) {
         btn.textContent = 'Pegar Tarefa';
     }
 }
+
+// ─── Aguardando Validação ────────────────────────────────────────────────
+
+async function loadValidationTasks() {
+    const col = document.getElementById('validation-tasks');
+    if (!col) return;
+
+    col.innerHTML = '<p class="text-sm text-[#444444] text-center py-8 col-span-full">Carregando...</p>';
+
+    let tasks = [];
+    try { tasks = await DevDeck.fetchApiSilent('/tasks/awaiting-validation'); }
+    catch (_) { tasks = []; }
+
+    updateTabBadge('validacao', (tasks || []).length);
+
+    if (!tasks || tasks.length === 0) {
+        col.innerHTML = '<p class="text-sm text-[#444444] text-center py-8 col-span-full">Nenhum ticket aguardando sua validação.</p>';
+        return;
+    }
+
+    col.innerHTML = '';
+    tasks.forEach(task => col.appendChild(createValidationTaskCard(task)));
+}
+
+// Atualiza o badge da aba já no boot, sem precisar abrir a aba.
+async function loadValidationBadge() {
+    try {
+        const tasks = await DevDeck.fetchApiSilent('/tasks/awaiting-validation');
+        updateTabBadge('validacao', (tasks || []).length);
+    } catch (_) { /* endpoint indisponível (backend antigo): badge oculto */ }
+}
+
+function createValidationTaskCard(task) {
+    const div = document.createElement('div');
+    div.dataset.taskId = task.id;
+    div.className = 'task-card p-4 rounded-xl cursor-pointer';
+
+    let html = '';
+
+    if (task.isTicket) {
+        const badges = [];
+        const c = ticketCompany(task);
+        if (c) badges.push(`<span class="text-[10px] px-2 py-0.5 rounded-full font-semibold ${getCompanyStyle(c)}">${escapeHtml(c)}</span>`);
+        if (task.category) badges.push(`<span class="text-[10px] px-2 py-0.5 rounded-full ${getCategoryStyle(task.category)}">${escapeHtml(task.category)}</span>`);
+        if (badges.length) html += `<div class="flex flex-wrap gap-1 mb-2">${badges.join('')}</div>`;
+    }
+
+    html += `<h4 class="text-sm font-medium text-white mb-1">${escapeHtml(task.title)}</h4>`;
+    if (task.description) html += `<p class="text-xs text-[#888888] mb-3 line-clamp-2">${escapeHtml(task.description)}</p>`;
+
+    const statusLabels = { TODO: 'A Fazer', DOING: 'Em Progresso' };
+    const worker = task.assignedUser?.name || 'Sem responsável';
+
+    html += `<div class="flex items-center justify-between mt-3 pt-3 border-t border-[#2a2a2a] gap-2">
+        <div class="flex items-center gap-1.5 min-w-0">
+            <span class="text-[10px] px-2 py-0.5 rounded text-[#888888] border border-[#2a2a2a]">${statusLabels[task.status] || task.status}</span>
+            <span class="text-xs text-[#555555] truncate">${escapeHtml(worker)}</span>
+        </div>
+        <button type="button" onclick="validateAndComplete(${task.id}, this)"
+            style="font-size:12px;font-weight:600;color:#5aaa7a;background:rgba(30,58,42,0.3);border:1px solid rgba(30,58,42,0.6);border-radius:8px;padding:6px 12px;cursor:pointer;white-space:nowrap;flex-shrink:0;"
+            onmouseover="this.style.background='rgba(30,58,42,0.55)'" onmouseout="this.style.background='rgba(30,58,42,0.3)'">✓ Validar e concluir</button>
+    </div>`;
+
+    div.innerHTML = html;
+    div.addEventListener('click', e => {
+        if (!e.target.closest('button') && typeof openTaskModal === 'function') openTaskModal(task);
+    });
+    return div;
+}
+
+async function validateAndComplete(taskId, btn) {
+    btn.disabled = true;
+    const original = btn.textContent;
+    btn.textContent = 'Concluindo...';
+    try {
+        await DevDeck.fetchApi(`/tasks/${taskId}`, {
+            method: 'PATCH',
+            body: JSON.stringify({ status: 'DONE' })
+        });
+        historyData = null; // invalida cache do histórico
+        const card = btn.closest('[data-task-id]');
+        if (card) {
+            card.style.transition = 'opacity 0.3s';
+            card.style.opacity = '0';
+            setTimeout(() => {
+                card.remove();
+                const left = document.querySelectorAll('#validation-tasks [data-task-id]').length;
+                updateTabBadge('validacao', left);
+                if (left === 0) {
+                    const col = document.getElementById('validation-tasks');
+                    if (col) col.innerHTML = '<p class="text-sm text-[#444444] text-center py-8 col-span-full">Nenhum ticket aguardando sua validação.</p>';
+                }
+            }, 300);
+        }
+    } catch (error) {
+        alert('Erro ao concluir: ' + error.message);
+        btn.disabled = false;
+        btn.textContent = original;
+    }
+}
+window.validateAndComplete = validateAndComplete;
+window.loadValidationTasks = loadValidationTasks;
 
 // ─── Histórico ───────────────────────────────────────────────────────────
 

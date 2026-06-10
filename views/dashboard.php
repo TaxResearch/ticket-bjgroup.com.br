@@ -17,6 +17,7 @@ $pageTitle = 'BJGROUP Suporte - Dashboard';
     <div id="tab-bar" class="flex items-center border-b border-[#2a2a2a] mb-6">
         <button id="tab-kanban" class="tab-btn tab-active" data-tab="kanban">Meu Kanban <span id="badge-kanban" class="tab-badge hidden">0</span></button>
         <button id="tab-coletivo" class="tab-btn" data-tab="coletivo">Kanban Coletivo <span id="badge-coletivo" class="tab-badge hidden">0</span></button>
+        <button id="tab-validacao" class="tab-btn" data-tab="validacao">Aguardando Validação <span id="badge-validacao" class="tab-badge hidden">0</span></button>
         <button id="tab-historico" class="tab-btn" data-tab="historico">Histórico</button>
         <div class="ml-auto pb-1">
             <button id="manage-boards-btn" class="text-xs text-[#555555] hover:text-white border border-[#2a2a2a] hover:border-[#555555] px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5">
@@ -87,6 +88,20 @@ $pageTitle = 'BJGROUP Suporte - Dashboard';
         <div class="bg-[#141414] border border-[#2a2a2a] rounded-xl p-4">
             <h3 class="column-header text-sm font-semibold mb-4 tracking-widest uppercase text-[#888888]">Disponíveis</h3>
             <div id="collective-available-tasks" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 min-h-[200px]">
+                <p class="text-sm text-[#444444] text-center py-8 col-span-full">Carregando...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Painel: Aguardando Validação -->
+    <div id="panel-validacao" class="panel hidden">
+        <div class="mb-6">
+            <h2 class="text-lg font-semibold text-white">Aguardando minha validação</h2>
+            <p class="text-sm text-[#555555]">Tickets em que você é o validador — revise e conclua quando estiver ok</p>
+        </div>
+
+        <div class="bg-[#141414] border border-[#2a2a2a] rounded-xl p-4">
+            <div id="validation-tasks" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 min-h-[200px]">
                 <p class="text-sm text-[#444444] text-center py-8 col-span-full">Carregando...</p>
             </div>
         </div>
