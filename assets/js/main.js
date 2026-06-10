@@ -11,9 +11,7 @@ function getAuthToken() {
 }
 
 function setAuthToken(token) {
-    console.log('setAuthToken called with:', token?.substring(0, 20)); // DEBUG
     localStorage.setItem(TOKEN_KEY, token);
-    console.log('Token saved to localStorage'); // DEBUG
 }
 
 function clearAuthData() {

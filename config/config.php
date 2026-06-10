@@ -1,6 +1,6 @@
 <?php
 // Configurações gerais do sistema
-define('APP_NAME', 'DevDeck');
+define('APP_NAME', 'BJGROUP Suporte');
 define('APP_VERSION', '2.0.0');
 
 // Configurações da API
@@ -49,11 +49,16 @@ function url($path)
 
 // Iniciar sessão
 if (session_status() === PHP_SESSION_NONE) {
+    // Marca o cookie como Secure quando a requisição é HTTPS (inclusive atrás do
+    // proxy reverso do Plesk, via X-Forwarded-Proto).
+    $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || (($_SERVER['SERVER_PORT'] ?? null) == 443)
+        || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
     session_set_cookie_params([
         'lifetime' => 86400, // 1 dia
         'path' => '/',       // Vale para todo o site
         'domain' => '',      // Domínio atual
-        'secure' => false,   // Mude para true se usar HTTPS em produção
+        'secure' => $isHttps, // Secure sob HTTPS (prod)
         'httponly' => true,  // Segurança contra XSS
         'samesite' => 'Lax'
     ]);

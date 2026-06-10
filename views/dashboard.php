@@ -77,7 +77,7 @@ $pageTitle = 'BJGROUP Suporte - Dashboard';
     <div id="panel-coletivo" class="panel hidden">
         <div class="mb-6">
             <h2 class="text-lg font-semibold text-white">Kanban Coletivo</h2>
-            <p class="text-sm text-[#555555]">Tarefas disponíveis dos seus grupos — clique em "Pegar Tarefa" para assumir</p>
+            <p class="text-sm text-[#555555]">Tickets recebidos aguardando um responsável — clique em "Pegar Tarefa" para assumir</p>
         </div>
 
         <div id="collective-filter-bar" class="hidden flex flex-wrap gap-2 mb-4">

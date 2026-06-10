@@ -60,9 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     method: 'POST',
                     body: JSON.stringify({ email, password })
                 }, false);
-                
-                console.log('Login response:', data); // DEBUG
-                
+
                 if (data?.access_token) {
                     DevDeck.setAuthToken(data.access_token);
 
